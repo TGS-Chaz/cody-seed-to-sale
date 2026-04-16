@@ -469,8 +469,93 @@ export const SOP_CATEGORIES = [
 export type SopCategory = typeof SOP_CATEGORIES[number];
 
 // ─── grow_strains.type ────────────────────────────────────────────────────────
+/** CCRS-exact casing — these are the values allowed by the
+ * grow_strains_type_check constraint AND required in the CCRS Strain.csv
+ * StrainType column. */
 export const STRAIN_TYPES = ["Indica", "Sativa", "Hybrid", "CBD", "High CBD"] as const;
 export type StrainType = typeof STRAIN_TYPES[number];
+export const STRAIN_TYPE_LABELS: Record<StrainType, string> = {
+  Indica: "Indica",
+  Sativa: "Sativa",
+  Hybrid: "Hybrid",
+  CBD: "CBD",
+  "High CBD": "High CBD",
+};
+/** Tailwind color classes keyed by strain type, used in badges, borders, and
+ * the default gradient on strain cards without photos. */
+export const STRAIN_TYPE_COLORS: Record<StrainType, { bg: string; text: string; ring: string; hex: string; gradient: string }> = {
+  Indica:     { bg: "bg-purple-500/15",  text: "text-purple-500",  ring: "ring-purple-500/40",  hex: "#A855F7", gradient: "from-purple-500/30 to-indigo-500/20" },
+  Sativa:     { bg: "bg-amber-500/15",   text: "text-amber-500",   ring: "ring-amber-500/40",   hex: "#F59E0B", gradient: "from-amber-500/30 to-orange-500/20" },
+  Hybrid:     { bg: "bg-emerald-500/15", text: "text-emerald-500", ring: "ring-emerald-500/40", hex: "#10B981", gradient: "from-emerald-500/30 to-teal-500/20" },
+  CBD:        { bg: "bg-blue-500/15",    text: "text-blue-500",    ring: "ring-blue-500/40",    hex: "#3B82F6", gradient: "from-blue-500/30 to-cyan-500/20" },
+  "High CBD": { bg: "bg-cyan-500/15",    text: "text-cyan-500",    ring: "ring-cyan-500/40",    hex: "#06B6D4", gradient: "from-cyan-500/30 to-sky-500/20" },
+};
+
+// ─── grow_strains.difficulty ─────────────────────────────────────────────────
+export const STRAIN_DIFFICULTIES = ["easy", "moderate", "advanced", "expert"] as const;
+export type StrainDifficulty = typeof STRAIN_DIFFICULTIES[number];
+export const STRAIN_DIFFICULTY_LABELS: Record<StrainDifficulty, string> = {
+  easy: "Easy", moderate: "Moderate", advanced: "Advanced", expert: "Expert",
+};
+
+// ─── grow_strains.preferred_environment ──────────────────────────────────────
+export const STRAIN_ENVIRONMENTS = ["indoor", "outdoor", "greenhouse", "any"] as const;
+export type StrainEnvironment = typeof STRAIN_ENVIRONMENTS[number];
+export const STRAIN_ENVIRONMENT_LABELS: Record<StrainEnvironment, string> = {
+  indoor: "Indoor", outdoor: "Outdoor", greenhouse: "Greenhouse", any: "Any",
+};
+
+// ─── grow_strains.growth_pattern ─────────────────────────────────────────────
+export const STRAIN_GROWTH_PATTERNS = ["short_bushy", "tall_stretchy", "medium", "columnar"] as const;
+export type StrainGrowthPattern = typeof STRAIN_GROWTH_PATTERNS[number];
+export const STRAIN_GROWTH_PATTERN_LABELS: Record<StrainGrowthPattern, string> = {
+  short_bushy: "Short / Bushy",
+  tall_stretchy: "Tall / Stretchy",
+  medium: "Medium",
+  columnar: "Columnar",
+};
+
+// ─── grow_strain_lineage.parent_type ─────────────────────────────────────────
+export const LINEAGE_PARENT_TYPES = ["mother", "father", "both", "unknown"] as const;
+export type LineageParentType = typeof LINEAGE_PARENT_TYPES[number];
+
+// ─── Cultivation taxonomies ─────────────────────────────────────────────────
+// These aren't enforced by CHECK constraints — they're stored as free-form
+// TEXT[] arrays. UI offers these as suggestions but allows custom entries.
+
+export const COMMON_TERPENES = [
+  "Myrcene", "Limonene", "Caryophyllene", "Linalool", "Pinene",
+  "Humulene", "Terpinolene", "Ocimene", "Bisabolol", "Nerolidol",
+  "Geraniol", "Camphene",
+] as const;
+
+/** Visual color for each terpene, used on chips. Unknown terpenes fall back
+ * to the generic muted style. */
+export const TERPENE_COLORS: Record<string, string> = {
+  Myrcene:       "bg-orange-500/15 text-orange-500",
+  Limonene:      "bg-yellow-500/15 text-yellow-500",
+  Caryophyllene: "bg-red-500/15 text-red-500",
+  Linalool:      "bg-purple-500/15 text-purple-500",
+  Pinene:        "bg-emerald-500/15 text-emerald-500",
+  Humulene:      "bg-amber-500/15 text-amber-500",
+  Terpinolene:   "bg-pink-500/15 text-pink-500",
+  Ocimene:       "bg-lime-500/15 text-lime-500",
+  Bisabolol:     "bg-rose-500/15 text-rose-500",
+  Nerolidol:     "bg-teal-500/15 text-teal-500",
+  Geraniol:      "bg-cyan-500/15 text-cyan-500",
+  Camphene:      "bg-indigo-500/15 text-indigo-500",
+};
+
+export const COMMON_FLAVORS = [
+  "Earthy", "Citrus", "Pine", "Berry", "Diesel", "Floral", "Spicy",
+  "Sweet", "Skunky", "Woody", "Tropical", "Minty", "Cheese", "Coffee",
+  "Grape", "Lavender",
+] as const;
+
+export const COMMON_EFFECTS = [
+  "Relaxed", "Euphoric", "Creative", "Focused", "Energetic", "Sleepy",
+  "Hungry", "Happy", "Uplifted", "Tingly", "Giggly", "Talkative",
+] as const;
 
 // ─── grow_tasks ───────────────────────────────────────────────────────────────
 export const TASK_STATUSES = ["pending", "in_progress", "completed", "cancelled", "overdue"] as const;

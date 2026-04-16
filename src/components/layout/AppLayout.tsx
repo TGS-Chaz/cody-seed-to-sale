@@ -23,6 +23,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  Dna,
+  MapPin,
+  Sprout,
+  LayoutGrid,
 } from "lucide-react";
 import { NavLink } from "@/components/shared/NavLink";
 import { useAuth } from "@/lib/auth";
@@ -40,6 +44,10 @@ const navGroups = [
     { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   ]},
   { label: "Cultivation", items: [
+    { to: "/cultivation/strains", icon: Dna, label: "Strains" },
+    { to: "/cultivation/areas", icon: MapPin, label: "Areas" },
+    { to: "/cultivation/sources", icon: Sprout, label: "Grow Sources" },
+    { to: "/cultivation/board", icon: LayoutGrid, label: "Grow Board" },
     { to: "/cultivation/plants", icon: Leaf, label: "Plants" },
     { to: "/cultivation/grow-cycles", icon: CalendarDays, label: "Grow Cycles" },
     { to: "/cultivation/harvests", icon: Scissors, label: "Harvests" },

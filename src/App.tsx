@@ -28,6 +28,8 @@ import EquipmentDetailPage from "@/pages/settings/EquipmentDetailPage";
 import CCRSSettingsPage from "@/pages/settings/CCRSSettingsPage";
 import AIPreferencesPage from "@/pages/settings/AIPreferencesPage";
 import IntegrationsPage from "@/pages/settings/IntegrationsPage";
+import StrainsPage from "@/pages/cultivation/StrainsPage";
+import StrainDetailPage from "@/pages/cultivation/StrainDetailPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -58,6 +60,11 @@ export default function App() {
                     <Route path="/profile" element={<ProfilePage />} />
 
                     {/* Cultivation */}
+                    <Route path="/cultivation/strains" element={<StrainsPage />} />
+                    <Route path="/cultivation/strains/:id" element={<StrainDetailPage />} />
+                    <Route path="/cultivation/areas" element={<PlaceholderPage />} />
+                    <Route path="/cultivation/sources" element={<PlaceholderPage />} />
+                    <Route path="/cultivation/board" element={<PlaceholderPage />} />
                     <Route path="/cultivation/plants" element={<PlaceholderPage />} />
                     <Route path="/cultivation/grow-cycles" element={<PlaceholderPage />} />
                     <Route path="/cultivation/harvests" element={<PlaceholderPage />} />
