@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 198.1 95.5">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0, .st1, .st2 {
+        isolation: isolate;
+      }
+
+      .st1 {
+        fill: #00d4aa;
+      }
+
+      .st1, .st2 {
+        font-family: Powerr-Medium, Powerr;
+        font-size: 93.6px;
+        font-weight: 500;
+      }
+
+      .st2 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2">
+    <g class="st0">
+      <text class="st1" transform="translate(0 79.6)"><tspan x="0" y="0">c</tspan></text>
+      <text class="st2" transform="translate(38.4 79.6)"><tspan x="0" y="0">ody</tspan></text>
+    </g>
+  </g>
+</svg>
