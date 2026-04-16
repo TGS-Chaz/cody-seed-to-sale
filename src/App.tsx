@@ -17,6 +17,7 @@ import PlaceholderPage from "@/pages/PlaceholderPage";
 import SettingsHub from "@/pages/settings/SettingsHub";
 import FacilitiesPage from "@/pages/settings/FacilitiesPage";
 import FacilityDetailPage from "@/pages/settings/FacilityDetailPage";
+import UsersRolesPage from "@/pages/settings/UsersRolesPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -72,7 +73,7 @@ export default function App() {
                     <Route path="/settings/facilities/:id" element={<FacilityDetailPage />} />
                     {/* Placeholder category routes */}
                     <Route path="/settings/organization" element={<PlaceholderPage />} />
-                    <Route path="/settings/users" element={<PlaceholderPage />} />
+                    <Route path="/settings/users" element={<UsersRolesPage />} />
                     <Route path="/settings/employees" element={<PlaceholderPage />} />
                     <Route path="/settings/fleet" element={<PlaceholderPage />} />
                     <Route path="/settings/customer-setup" element={<PlaceholderPage />} />
