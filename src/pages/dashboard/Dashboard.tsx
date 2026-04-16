@@ -5,9 +5,18 @@ import {
   ArrowRight, Sprout, FlaskConical, Settings,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useProfile, profileDisplayName } from "@/lib/profile";
 import StatCard from "@/components/shared/StatCard";
 import PageHeader from "@/components/shared/PageHeader";
+import OrgHeader from "@/components/shared/OrgHeader";
 import CodyInsightsPanel from "@/components/cody/CodyInsightsPanel";
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 const gettingStarted = [
   { icon: Settings, title: "Configure Strains & Areas", description: "Set up your strain library and grow areas before adding plants.", to: "/settings" },
@@ -18,13 +27,17 @@ const gettingStarted = [
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { profile } = useProfile();
   const navigate = useNavigate();
+
+  const displayName = profileDisplayName(profile, user?.email);
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto">
       <PageHeader
-        title="Welcome to Cody Grow"
-        description={`Signed in as ${user?.email}`}
+        title={`${getGreeting()}, ${displayName}`}
+        description="Welcome to Cody Grow"
+        actions={<OrgHeader />}
       />
 
       {/* Stat cards */}

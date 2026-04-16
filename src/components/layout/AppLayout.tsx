@@ -27,6 +27,8 @@ import {
 import { NavLink } from "@/components/shared/NavLink";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import { useProfile, profileInitials } from "@/lib/profile";
+import UserAvatar from "@/components/shared/UserAvatar";
 import codyIcon from "@/assets/cody-icon.svg";
 import { Toaster } from "@/components/ui/sonner";
 import AskCody from "@/components/cody/AskCody";
@@ -67,6 +69,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const { profile } = useProfile();
   const { preference, toggle: toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -181,11 +184,19 @@ export default function AppLayout() {
         >
           {user && !collapsed && (
             <div className="flex items-center gap-2 px-2 py-1.5 rounded-md">
-              <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary shrink-0">
-                {user.email?.[0]?.toUpperCase() ?? "U"}
-              </div>
+              <button
+                onClick={() => navigate("/profile")}
+                className="shrink-0 hover:opacity-80 transition-opacity"
+                title="Edit profile"
+              >
+                <UserAvatar
+                  avatarUrl={profile?.avatar_url}
+                  initials={profileInitials(profile, user.email)}
+                  size={24}
+                />
+              </button>
               <span className="text-[11px] text-foreground/70 truncate flex-1">
-                {user.email}
+                {profile?.full_name ?? user.email}
               </span>
               <button
                 onClick={handleSignOut}
@@ -197,13 +208,26 @@ export default function AppLayout() {
             </div>
           )}
           {user && collapsed && (
-            <button
-              onClick={handleSignOut}
-              className="w-full flex justify-center text-muted-foreground hover:text-destructive transition-colors py-1"
-              title="Sign out"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-            </button>
+            <div className="flex flex-col items-center gap-1">
+              <button
+                onClick={() => navigate("/profile")}
+                className="hover:opacity-80 transition-opacity"
+                title="Edit profile"
+              >
+                <UserAvatar
+                  avatarUrl={profile?.avatar_url}
+                  initials={profileInitials(profile, user.email)}
+                  size={24}
+                />
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="text-muted-foreground hover:text-destructive transition-colors py-1"
+                title="Sign out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           )}
           <div className={`flex items-center ${collapsed ? "justify-center" : "gap-2 px-2"} mt-1`}>
             {!collapsed && <div className="flex-1" />}

@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/lib/auth";
 import { ThemeProvider } from "@/lib/theme";
+import { ProfileProvider } from "@/lib/profile";
+import { OrgProvider } from "@/lib/org";
 
 import AppLayout from "@/components/layout/AppLayout";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
@@ -10,6 +12,7 @@ import SignupPage from "@/pages/auth/SignupPage";
 import RequestAccessPage from "@/pages/auth/RequestAccessPage";
 import NoAccessPage from "@/pages/auth/NoAccessPage";
 import Dashboard from "@/pages/dashboard/Dashboard";
+import ProfilePage from "@/pages/ProfilePage";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 
 function ScrollToTop() {
@@ -21,6 +24,8 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
+        <ProfileProvider>
+        <OrgProvider>
         <ThemeProvider>
           <TooltipProvider>
             <Routes>
@@ -34,6 +39,7 @@ export default function App() {
               <Route element={<ProtectedRoute />}>
                 <Route element={<AppLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/profile" element={<ProfilePage />} />
 
                   {/* Cultivation */}
                   <Route path="/cultivation/plants" element={<PlaceholderPage />} />
@@ -67,6 +73,8 @@ export default function App() {
             </Routes>
           </TooltipProvider>
         </ThemeProvider>
+        </OrgProvider>
+        </ProfileProvider>
       </AuthProvider>
     </BrowserRouter>
   );
