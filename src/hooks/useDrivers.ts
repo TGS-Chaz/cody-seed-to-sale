@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useOrg } from "@/lib/org";
+import type { DriverType as SchemaDriverType } from "@/lib/schema-enums";
 
-export type DriverType = "delivery" | "pickup";
+export type DriverType = SchemaDriverType;
 
 export interface Driver {
   id: string;

@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useOrg } from "@/lib/org";
+import type { EmployeeDepartment, EmploymentStatus as SchemaEmploymentStatus } from "@/lib/schema-enums";
 
-export type EmploymentStatus = "active" | "on_leave" | "terminated" | "seasonal" | "contractor";
-export type Department =
-  | "cultivation" | "processing" | "packaging" | "quality"
-  | "sales" | "fulfillment" | "delivery" | "admin" | "management" | "other";
+/** Re-export with local names for backward compat. These mirror the CHECK
+ * constraints on grow_employees.department and grow_employees.employment_status. */
+export type EmploymentStatus = SchemaEmploymentStatus;
+export type Department = EmployeeDepartment;
 
 export interface Employee {
   id: string;

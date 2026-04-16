@@ -6,6 +6,7 @@ import ScrollableModal, { ModalHeader } from "@/components/ui/scrollable-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Facility, FacilityInput } from "@/hooks/useFacilities";
+import { FACILITY_LICENSE_TYPES, FACILITY_LICENSE_TYPE_LABELS } from "@/lib/schema-enums";
 
 interface FacilityFormModalProps {
   open: boolean;
@@ -14,14 +15,11 @@ interface FacilityFormModalProps {
   editing?: Facility | null;
 }
 
-const LICENSE_TYPES = [
-  { value: "producer_tier_1", label: "Producer Tier 1" },
-  { value: "producer_tier_2", label: "Producer Tier 2" },
-  { value: "producer_tier_3", label: "Producer Tier 3" },
-  { value: "processor", label: "Processor" },
-  { value: "producer_processor", label: "Producer / Processor" },
-  { value: "transporter", label: "Transporter" },
-];
+/** Source of truth in src/lib/schema-enums.ts — mirrored from the CHECK constraint. */
+const LICENSE_TYPES = FACILITY_LICENSE_TYPES.map((value) => ({
+  value,
+  label: FACILITY_LICENSE_TYPE_LABELS[value],
+}));
 
 export default function FacilityFormModal({ open, onClose, onSave, editing }: FacilityFormModalProps) {
   const isEditMode = !!editing;

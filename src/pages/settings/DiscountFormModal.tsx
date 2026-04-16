@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import ScrollableModal, { ModalHeader } from "@/components/ui/scrollable-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Discount, DiscountInput, DiscountType } from "@/hooks/useDiscounts";
+import { Discount, DiscountInput } from "@/hooks/useDiscounts";
+import { DISCOUNT_TYPES, DISCOUNT_TYPE_SHORT_LABELS, DiscountType } from "@/lib/schema-enums";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 export default function DiscountFormModal({ open, onClose, onSave, editing }: Props) {
   const isEdit = !!editing;
   const [name, setName] = useState("");
-  const [discountType, setDiscountType] = useState<DiscountType>("percent");
+  const [discountType, setDiscountType] = useState<DiscountType>("percentage");
   const [discountValue, setDiscountValue] = useState<string>("");
   const [validFrom, setValidFrom] = useState("");
   const [validUntil, setValidUntil] = useState("");
@@ -30,7 +31,7 @@ export default function DiscountFormModal({ open, onClose, onSave, editing }: Pr
     if (!open) return;
     if (editing) {
       setName(editing.name);
-      setDiscountType((editing.discount_type as DiscountType) ?? "percent");
+      setDiscountType((editing.discount_type as DiscountType) ?? "percentage");
       setDiscountValue(String(editing.discount_value ?? ""));
       setValidFrom(editing.valid_from ?? "");
       setValidUntil(editing.valid_until ?? "");
@@ -38,7 +39,7 @@ export default function DiscountFormModal({ open, onClose, onSave, editing }: Pr
       setIsActive(editing.is_active);
     } else {
       setName("");
-      setDiscountType("percent");
+      setDiscountType("percentage");
       setDiscountValue("");
       setValidFrom("");
       setValidUntil("");
@@ -54,7 +55,7 @@ export default function DiscountFormModal({ open, onClose, onSave, editing }: Pr
     if (!name.trim()) next.name = "Name is required";
     const parsed = Number(discountValue);
     if (!discountValue || Number.isNaN(parsed) || parsed <= 0) next.value = "Enter a positive number";
-    if (discountType === "percent" && parsed > 100) next.value = "Percent cannot exceed 100";
+    if (discountType === "percentage" && parsed > 100) next.value = "Percent cannot exceed 100";
     if (validFrom && validUntil && new Date(validUntil) < new Date(validFrom)) next.dates = "End date must be after start date";
     setErrors(next);
     if (Object.keys(next).length > 0) return;
@@ -109,43 +110,51 @@ export default function DiscountFormModal({ open, onClose, onSave, editing }: Pr
         <div className="space-y-1.5">
           <label className="block text-[11px] uppercase tracking-wider font-medium text-muted-foreground">Type</label>
           <div className="inline-flex rounded-lg border border-border bg-muted/30 p-0.5">
-            <button
-              type="button"
-              onClick={() => setDiscountType("percent")}
-              className={cn(
-                "px-3 h-8 text-[12px] font-medium rounded-md transition-colors",
-                discountType === "percent" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Percent (%)
-            </button>
-            <button
-              type="button"
-              onClick={() => setDiscountType("fixed")}
-              className={cn(
-                "px-3 h-8 text-[12px] font-medium rounded-md transition-colors",
-                discountType === "fixed" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              Fixed ($)
-            </button>
+            {DISCOUNT_TYPES.map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setDiscountType(t)}
+                className={cn(
+                  "px-3 h-8 text-[12px] font-medium rounded-md transition-colors whitespace-nowrap",
+                  discountType === t ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {DISCOUNT_TYPE_SHORT_LABELS[t]}
+              </button>
+            ))}
           </div>
+          <p className="text-[11px] text-muted-foreground/70 pt-0.5">
+            {discountType === "percentage" && "Discount a percentage off the line total."}
+            {discountType === "fixed_amount" && "Discount a flat dollar amount off the order."}
+            {discountType === "unit_price_override" && "Override the unit price directly for matching products."}
+          </p>
         </div>
 
-        <Field label={discountType === "percent" ? "Percent Off" : "Amount Off"} required error={errors.value}>
+        <Field
+          label={
+            discountType === "percentage" ? "Percent Off" :
+            discountType === "fixed_amount" ? "Amount Off" :
+            "Override Unit Price"
+          }
+          required
+          error={errors.value}
+        >
           <div className="relative">
             <Input
               type="number"
-              step={discountType === "percent" ? "1" : "0.01"}
+              step={discountType === "percentage" ? "1" : "0.01"}
               min="0"
               value={discountValue}
               onChange={(e) => setDiscountValue(e.target.value)}
-              placeholder={discountType === "percent" ? "10" : "25.00"}
-              className="font-mono pr-8"
+              placeholder={discountType === "percentage" ? "10" : "25.00"}
+              className={cn("font-mono", discountType === "percentage" ? "pr-8" : "pl-6")}
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">
-              {discountType === "percent" ? "%" : "$"}
-            </span>
+            {discountType === "percentage" ? (
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">%</span>
+            ) : (
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[12px] text-muted-foreground">$</span>
+            )}
           </div>
         </Field>
 

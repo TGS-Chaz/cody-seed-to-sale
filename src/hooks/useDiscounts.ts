@@ -2,14 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useOrg } from "@/lib/org";
+import type { DiscountType } from "@/lib/schema-enums";
 
-export type DiscountType = "percent" | "fixed";
+// Re-export for backwards-compat callers that already imported DiscountType from this module.
+export type { DiscountType };
 
 export interface Discount {
   id: string;
   org_id: string;
   name: string;
-  discount_type: DiscountType | string | null;
+  discount_type: DiscountType | null;
   discount_value: number;
   valid_from: string | null;
   valid_until: string | null;
@@ -25,7 +27,7 @@ export interface Discount {
 
 export interface DiscountInput {
   name: string;
-  discount_type?: DiscountType | string | null;
+  discount_type?: DiscountType | null;
   discount_value: number;
   valid_from?: string | null;
   valid_until?: string | null;

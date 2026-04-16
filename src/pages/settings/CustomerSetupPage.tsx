@@ -610,7 +610,8 @@ function DiscountsTab({ active }: { active: boolean }) {
   }, [data, searchValue, statusFilter]);
 
   const formatDiscountValue = (d: Discount) => {
-    if (d.discount_type === "percent") return `${d.discount_value}%`;
+    if (d.discount_type === "percentage") return `${d.discount_value}%`;
+    // Both fixed_amount and unit_price_override are dollar values
     return `$${Number(d.discount_value).toFixed(2)}`;
   };
 

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useOrg } from "@/lib/org";
+import type { VehicleType as SchemaVehicleType } from "@/lib/schema-enums";
 
-export type VehicleType = "delivery" | "pickup";
+export type VehicleType = SchemaVehicleType;
 
 export interface Vehicle {
   id: string;

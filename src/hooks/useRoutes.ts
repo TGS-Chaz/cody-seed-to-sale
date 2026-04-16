@@ -2,8 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useOrg } from "@/lib/org";
+import type { RouteDayOfWeek } from "@/lib/schema-enums";
 
-export type DayOfWeek = "sunday" | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "various";
+/** Re-export with the local name for backward compat with existing callers. */
+export type DayOfWeek = RouteDayOfWeek;
 
 export interface Route {
   id: string;
