@@ -1481,6 +1481,137 @@ export type Database = {
           },
         ]
       }
+      grow_account_notes: {
+        Row: {
+          account_id: string
+          attribute_ids: string[] | null
+          content: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_pinned: boolean | null
+          org_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          account_id: string
+          attribute_ids?: string[] | null
+          content: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          org_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          account_id?: string
+          attribute_ids?: string[] | null
+          content?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          org_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_account_notes_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "grow_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_account_notes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_account_price_lists: {
+        Row: {
+          account_id: string
+          assigned_at: string | null
+          id: string
+          price_list_id: string
+          priority: number | null
+        }
+        Insert: {
+          account_id: string
+          assigned_at?: string | null
+          id?: string
+          price_list_id: string
+          priority?: number | null
+        }
+        Update: {
+          account_id?: string
+          assigned_at?: string | null
+          id?: string
+          price_list_id?: string
+          priority?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_account_price_lists_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "grow_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_account_price_lists_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "grow_price_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_account_statuses: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          org_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          org_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          org_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_account_statuses_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grow_accounts: {
         Row: {
           account_group_id: string | null
@@ -1507,10 +1638,12 @@ export type Database = {
           primary_contact_email: string | null
           primary_contact_name: string | null
           primary_contact_phone: string | null
+          route_id: string | null
           state: string | null
           tags: string[] | null
           updated_at: string | null
           workflow_status: string | null
+          workflow_status_id: string | null
           zip: string | null
         }
         Insert: {
@@ -1538,10 +1671,12 @@ export type Database = {
           primary_contact_email?: string | null
           primary_contact_name?: string | null
           primary_contact_phone?: string | null
+          route_id?: string | null
           state?: string | null
           tags?: string[] | null
           updated_at?: string | null
           workflow_status?: string | null
+          workflow_status_id?: string | null
           zip?: string | null
         }
         Update: {
@@ -1569,10 +1704,12 @@ export type Database = {
           primary_contact_email?: string | null
           primary_contact_name?: string | null
           primary_contact_phone?: string | null
+          route_id?: string | null
           state?: string | null
           tags?: string[] | null
           updated_at?: string | null
           workflow_status?: string | null
+          workflow_status_id?: string | null
           zip?: string | null
         }
         Relationships: [
@@ -1588,6 +1725,20 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_accounts_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "grow_routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_accounts_workflow_status_id_fkey"
+            columns: ["workflow_status_id"]
+            isOneToOne: false
+            referencedRelation: "grow_account_statuses"
             referencedColumns: ["id"]
           },
         ]
@@ -1636,6 +1787,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_areas_facility"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "grow_facilities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "grow_areas_org_id_fkey"
             columns: ["org_id"]
@@ -1993,6 +2151,54 @@ export type Database = {
           },
         ]
       }
+      grow_calibration_log: {
+        Row: {
+          calibrated_at: string
+          calibrated_by: string | null
+          certificate_url: string | null
+          created_at: string | null
+          equipment_id: string
+          id: string
+          notes: string | null
+          pass_fail: string | null
+        }
+        Insert: {
+          calibrated_at: string
+          calibrated_by?: string | null
+          certificate_url?: string | null
+          created_at?: string | null
+          equipment_id: string
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+        }
+        Update: {
+          calibrated_at?: string
+          calibrated_by?: string | null
+          certificate_url?: string | null
+          created_at?: string | null
+          equipment_id?: string
+          id?: string
+          notes?: string | null
+          pass_fail?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_calibration_log_calibrated_by_fkey"
+            columns: ["calibrated_by"]
+            isOneToOne: false
+            referencedRelation: "grow_employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_calibration_log_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "grow_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grow_ccrs_uploads: {
         Row: {
           confirmed_at: string | null
@@ -2122,6 +2328,261 @@ export type Database = {
           },
         ]
       }
+      grow_discounts: {
+        Row: {
+          applies_to_account_groups: string[] | null
+          applies_to_accounts: string[] | null
+          applies_to_categories: string[] | null
+          applies_to_products: string[] | null
+          created_at: string | null
+          discount_type: string | null
+          discount_value: number
+          id: string
+          is_active: boolean | null
+          minimum_order_amount: number | null
+          name: string
+          org_id: string
+          updated_at: string | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          applies_to_account_groups?: string[] | null
+          applies_to_accounts?: string[] | null
+          applies_to_categories?: string[] | null
+          applies_to_products?: string[] | null
+          created_at?: string | null
+          discount_type?: string | null
+          discount_value: number
+          id?: string
+          is_active?: boolean | null
+          minimum_order_amount?: number | null
+          name: string
+          org_id: string
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          applies_to_account_groups?: string[] | null
+          applies_to_accounts?: string[] | null
+          applies_to_categories?: string[] | null
+          applies_to_products?: string[] | null
+          created_at?: string | null
+          discount_type?: string | null
+          discount_value?: number
+          id?: string
+          is_active?: boolean | null
+          minimum_order_amount?: number | null
+          name?: string
+          org_id?: string
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_discounts_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_drivers: {
+        Row: {
+          client_account_id: string | null
+          client_license_number: string | null
+          created_at: string | null
+          created_by: string | null
+          driver_type: string
+          drivers_license_expires: string | null
+          drivers_license_number: string
+          drivers_license_state: string | null
+          email: string | null
+          employee_id: string | null
+          first_name: string
+          hide_for_fulfillment: boolean | null
+          id: string
+          is_active: boolean | null
+          last_name: string
+          notes: string | null
+          org_id: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_account_id?: string | null
+          client_license_number?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          driver_type: string
+          drivers_license_expires?: string | null
+          drivers_license_number: string
+          drivers_license_state?: string | null
+          email?: string | null
+          employee_id?: string | null
+          first_name: string
+          hide_for_fulfillment?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          last_name: string
+          notes?: string | null
+          org_id: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_account_id?: string | null
+          client_license_number?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          driver_type?: string
+          drivers_license_expires?: string | null
+          drivers_license_number?: string
+          drivers_license_state?: string | null
+          email?: string | null
+          employee_id?: string | null
+          first_name?: string
+          hide_for_fulfillment?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          last_name?: string
+          notes?: string | null
+          org_id?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_drivers_client_account_id_fkey"
+            columns: ["client_account_id"]
+            isOneToOne: false
+            referencedRelation: "grow_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_drivers_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "grow_employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_drivers_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_employees: {
+        Row: {
+          avatar_url: string | null
+          birthdate: string | null
+          created_at: string | null
+          created_by: string | null
+          department: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          employee_number: string | null
+          employment_status: string | null
+          facility_id: string | null
+          first_name: string
+          hire_date: string | null
+          id: string
+          is_system_user: boolean | null
+          job_title: string | null
+          last_name: string
+          middle_name: string | null
+          notes: string | null
+          org_id: string
+          phone: string | null
+          preferred_name: string | null
+          termination_date: string | null
+          updated_at: string | null
+          user_id: string | null
+          wa_drivers_license: string | null
+          wa_drivers_license_expires: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          birthdate?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          department?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_number?: string | null
+          employment_status?: string | null
+          facility_id?: string | null
+          first_name: string
+          hire_date?: string | null
+          id?: string
+          is_system_user?: boolean | null
+          job_title?: string | null
+          last_name: string
+          middle_name?: string | null
+          notes?: string | null
+          org_id: string
+          phone?: string | null
+          preferred_name?: string | null
+          termination_date?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wa_drivers_license?: string | null
+          wa_drivers_license_expires?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          birthdate?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          department?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          employee_number?: string | null
+          employment_status?: string | null
+          facility_id?: string | null
+          first_name?: string
+          hire_date?: string | null
+          id?: string
+          is_system_user?: boolean | null
+          job_title?: string | null
+          last_name?: string
+          middle_name?: string | null
+          notes?: string | null
+          org_id?: string
+          phone?: string | null
+          preferred_name?: string | null
+          termination_date?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          wa_drivers_license?: string | null
+          wa_drivers_license_expires?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_employees_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "grow_facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_employees_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grow_environmental_readings: {
         Row: {
           area_id: string
@@ -2166,6 +2627,159 @@ export type Database = {
           },
           {
             foreignKeyName: "grow_environmental_readings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_equipment: {
+        Row: {
+          area_id: string | null
+          asset_tag: string | null
+          calibration_frequency_days: number | null
+          created_at: string | null
+          equipment_type: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean | null
+          last_calibration_date: string | null
+          make: string | null
+          model: string | null
+          next_calibration_due: string | null
+          notes: string | null
+          org_id: string
+          serial_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          area_id?: string | null
+          asset_tag?: string | null
+          calibration_frequency_days?: number | null
+          created_at?: string | null
+          equipment_type?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calibration_date?: string | null
+          make?: string | null
+          model?: string | null
+          next_calibration_due?: string | null
+          notes?: string | null
+          org_id: string
+          serial_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          area_id?: string | null
+          asset_tag?: string | null
+          calibration_frequency_days?: number | null
+          created_at?: string | null
+          equipment_type?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calibration_date?: string | null
+          make?: string | null
+          model?: string | null
+          next_calibration_due?: string | null
+          notes?: string | null
+          org_id?: string
+          serial_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_equipment_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "grow_areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_equipment_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "grow_facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_equipment_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_facilities: {
+        Row: {
+          address_line1: string
+          address_line2: string | null
+          ccrs_location_code: string | null
+          city: string
+          created_at: string | null
+          dea_registration: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          is_primary: boolean | null
+          license_number: string
+          license_type: string | null
+          name: string
+          org_id: string
+          phone: string | null
+          state: string | null
+          ubi_number: string | null
+          updated_at: string | null
+          zip: string
+        }
+        Insert: {
+          address_line1: string
+          address_line2?: string | null
+          ccrs_location_code?: string | null
+          city: string
+          created_at?: string | null
+          dea_registration?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          license_number: string
+          license_type?: string | null
+          name: string
+          org_id: string
+          phone?: string | null
+          state?: string | null
+          ubi_number?: string | null
+          updated_at?: string | null
+          zip: string
+        }
+        Update: {
+          address_line1?: string
+          address_line2?: string | null
+          ccrs_location_code?: string | null
+          city?: string
+          created_at?: string | null
+          dea_registration?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          license_number?: string
+          license_type?: string | null
+          name?: string
+          org_id?: string
+          phone?: string | null
+          state?: string | null
+          ubi_number?: string | null
+          updated_at?: string | null
+          zip?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_facilities_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -2307,6 +2921,59 @@ export type Database = {
           },
         ]
       }
+      grow_in_app_notifications: {
+        Row: {
+          action_url: string | null
+          content: string | null
+          created_at: string | null
+          dismissed_at: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event_key: string
+          id: string
+          org_id: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          content?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_key: string
+          id?: string
+          org_id: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          content?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event_key?: string
+          id?: string
+          org_id?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_in_app_notifications_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grow_label_templates: {
         Row: {
           created_at: string | null
@@ -2432,6 +3099,7 @@ export type Database = {
           destination_license_name: string | null
           destination_license_number: string
           destination_phone: string | null
+          driver_id: string | null
           driver_license_number: string | null
           driver_name: string | null
           driver_phone: string | null
@@ -2446,11 +3114,13 @@ export type Database = {
           origin_license_name: string | null
           origin_license_number: string
           origin_phone: string | null
+          route_id: string | null
           status: string | null
           transportation_type: string | null
           transporter_license_number: string | null
           updated_at: string | null
           vehicle_color: string | null
+          vehicle_id: string | null
           vehicle_license_plate: string | null
           vehicle_make: string | null
           vehicle_model: string | null
@@ -2472,6 +3142,7 @@ export type Database = {
           destination_license_name?: string | null
           destination_license_number: string
           destination_phone?: string | null
+          driver_id?: string | null
           driver_license_number?: string | null
           driver_name?: string | null
           driver_phone?: string | null
@@ -2486,11 +3157,13 @@ export type Database = {
           origin_license_name?: string | null
           origin_license_number: string
           origin_phone?: string | null
+          route_id?: string | null
           status?: string | null
           transportation_type?: string | null
           transporter_license_number?: string | null
           updated_at?: string | null
           vehicle_color?: string | null
+          vehicle_id?: string | null
           vehicle_license_plate?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
@@ -2512,6 +3185,7 @@ export type Database = {
           destination_license_name?: string | null
           destination_license_number?: string
           destination_phone?: string | null
+          driver_id?: string | null
           driver_license_number?: string | null
           driver_name?: string | null
           driver_phone?: string | null
@@ -2526,11 +3200,13 @@ export type Database = {
           origin_license_name?: string | null
           origin_license_number?: string
           origin_phone?: string | null
+          route_id?: string | null
           status?: string | null
           transportation_type?: string | null
           transporter_license_number?: string | null
           updated_at?: string | null
           vehicle_color?: string | null
+          vehicle_id?: string | null
           vehicle_license_plate?: string | null
           vehicle_make?: string | null
           vehicle_model?: string | null
@@ -2541,6 +3217,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "grow_manifests_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "grow_drivers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "grow_manifests_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
@@ -2549,6 +3232,102 @@ export type Database = {
           },
           {
             foreignKeyName: "grow_manifests_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_manifests_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "grow_routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_manifests_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "grow_vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_note_attributes: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          org_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          org_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          org_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_note_attributes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_notification_subscriptions: {
+        Row: {
+          created_at: string | null
+          email_enabled: boolean | null
+          event_key: string
+          id: string
+          in_app_enabled: boolean | null
+          org_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          event_key: string
+          id?: string
+          in_app_enabled?: boolean | null
+          org_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_enabled?: boolean | null
+          event_key?: string
+          id?: string
+          in_app_enabled?: boolean | null
+          org_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_notification_subscriptions_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -2733,6 +3512,137 @@ export type Database = {
           },
         ]
       }
+      grow_org_settings: {
+        Row: {
+          auto_generate_barcodes: boolean | null
+          ccrs_auto_upload: boolean | null
+          ccrs_integrator_approved: boolean | null
+          ccrs_location_code: string | null
+          ccrs_reporting_email: string | null
+          created_at: string | null
+          default_inventory_label_template_id: string | null
+          default_manifest_template_id: string | null
+          default_product_label_template_id: string | null
+          default_route_id: string | null
+          enable_ai_harvest_timing: boolean | null
+          enable_ai_insights: boolean | null
+          enable_ai_yield_predictions: boolean | null
+          org_id: string
+          primary_color: string | null
+          quickbooks_company_id: string | null
+          quickbooks_connected: boolean | null
+          quickbooks_last_sync_at: string | null
+          require_qa_before_availability: boolean | null
+          secondary_color: string | null
+          updated_at: string | null
+          use_pack_to_order: boolean | null
+        }
+        Insert: {
+          auto_generate_barcodes?: boolean | null
+          ccrs_auto_upload?: boolean | null
+          ccrs_integrator_approved?: boolean | null
+          ccrs_location_code?: string | null
+          ccrs_reporting_email?: string | null
+          created_at?: string | null
+          default_inventory_label_template_id?: string | null
+          default_manifest_template_id?: string | null
+          default_product_label_template_id?: string | null
+          default_route_id?: string | null
+          enable_ai_harvest_timing?: boolean | null
+          enable_ai_insights?: boolean | null
+          enable_ai_yield_predictions?: boolean | null
+          org_id: string
+          primary_color?: string | null
+          quickbooks_company_id?: string | null
+          quickbooks_connected?: boolean | null
+          quickbooks_last_sync_at?: string | null
+          require_qa_before_availability?: boolean | null
+          secondary_color?: string | null
+          updated_at?: string | null
+          use_pack_to_order?: boolean | null
+        }
+        Update: {
+          auto_generate_barcodes?: boolean | null
+          ccrs_auto_upload?: boolean | null
+          ccrs_integrator_approved?: boolean | null
+          ccrs_location_code?: string | null
+          ccrs_reporting_email?: string | null
+          created_at?: string | null
+          default_inventory_label_template_id?: string | null
+          default_manifest_template_id?: string | null
+          default_product_label_template_id?: string | null
+          default_route_id?: string | null
+          enable_ai_harvest_timing?: boolean | null
+          enable_ai_insights?: boolean | null
+          enable_ai_yield_predictions?: boolean | null
+          org_id?: string
+          primary_color?: string | null
+          quickbooks_company_id?: string | null
+          quickbooks_connected?: boolean | null
+          quickbooks_last_sync_at?: string | null
+          require_qa_before_availability?: boolean | null
+          secondary_color?: string | null
+          updated_at?: string | null
+          use_pack_to_order?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_org_settings_default_inventory_label_template_id_fkey"
+            columns: ["default_inventory_label_template_id"]
+            isOneToOne: false
+            referencedRelation: "grow_label_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_org_settings_default_product_label_template_id_fkey"
+            columns: ["default_product_label_template_id"]
+            isOneToOne: false
+            referencedRelation: "grow_label_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_org_settings_default_route_id_fkey"
+            columns: ["default_route_id"]
+            isOneToOne: false
+            referencedRelation: "grow_routes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_org_settings_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_permissions: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          key: string
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key: string
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          key?: string
+          name?: string
+        }
+        Relationships: []
+      }
       grow_plants: {
         Row: {
           area_id: string | null
@@ -2831,6 +3741,89 @@ export type Database = {
             columns: ["strain_id"]
             isOneToOne: false
             referencedRelation: "grow_strains"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_price_list_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          price_list_id: string
+          product_id: string
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          price_list_id: string
+          product_id: string
+          unit_price: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          price_list_id?: string
+          product_id?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_price_list_items_price_list_id_fkey"
+            columns: ["price_list_id"]
+            isOneToOne: false
+            referencedRelation: "grow_price_lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_price_list_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "grow_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_price_lists: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          org_id: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          org_id: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          org_id?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_price_lists_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -3391,6 +4384,149 @@ export type Database = {
           },
         ]
       }
+      grow_role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_allowed: boolean | null
+          permission_id: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_allowed?: boolean | null
+          permission_id: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_allowed?: boolean | null
+          permission_id?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_role_permissions_permission_id_fkey"
+            columns: ["permission_id"]
+            isOneToOne: false
+            referencedRelation: "grow_permissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "grow_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_roles: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          is_system_role: boolean | null
+          name: string
+          org_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system_role?: boolean | null
+          name: string
+          org_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system_role?: boolean | null
+          name?: string
+          org_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_roles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_routes: {
+        Row: {
+          assigned_driver_id: string | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          minimum_order_amount: number | null
+          name: string
+          org_id: string
+          typical_day_of_week: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_driver_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          minimum_order_amount?: number | null
+          name: string
+          org_id: string
+          typical_day_of_week?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_driver_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          minimum_order_amount?: number | null
+          name?: string
+          org_id?: string
+          typical_day_of_week?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_routes_assigned_driver_id_fkey"
+            columns: ["assigned_driver_id"]
+            isOneToOne: false
+            referencedRelation: "grow_drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_routes_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       grow_saved_views: {
         Row: {
           created_at: string | null
@@ -3782,6 +4918,135 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "grow_transfers_inbound_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          id: string
+          org_id: string
+          role_id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          org_id: string
+          role_id: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          org_id?: string
+          role_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_user_roles_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "grow_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grow_vehicles: {
+        Row: {
+          client_account_id: string | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          hide_for_fulfillment: boolean | null
+          id: string
+          insurance_company: string | null
+          insurance_expires: string | null
+          insurance_policy_number: string | null
+          is_active: boolean | null
+          license_plate: string
+          make: string
+          model: string
+          notes: string | null
+          org_id: string
+          registration_expires: string | null
+          unit_name: string | null
+          updated_at: string | null
+          vehicle_type: string
+          vin: string | null
+          year: string
+        }
+        Insert: {
+          client_account_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          hide_for_fulfillment?: boolean | null
+          id?: string
+          insurance_company?: string | null
+          insurance_expires?: string | null
+          insurance_policy_number?: string | null
+          is_active?: boolean | null
+          license_plate: string
+          make: string
+          model: string
+          notes?: string | null
+          org_id: string
+          registration_expires?: string | null
+          unit_name?: string | null
+          updated_at?: string | null
+          vehicle_type: string
+          vin?: string | null
+          year: string
+        }
+        Update: {
+          client_account_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          hide_for_fulfillment?: boolean | null
+          id?: string
+          insurance_company?: string | null
+          insurance_expires?: string | null
+          insurance_policy_number?: string | null
+          is_active?: boolean | null
+          license_plate?: string
+          make?: string
+          model?: string
+          notes?: string | null
+          org_id?: string
+          registration_expires?: string | null
+          unit_name?: string | null
+          updated_at?: string | null
+          vehicle_type?: string
+          vin?: string | null
+          year?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grow_vehicles_client_account_id_fkey"
+            columns: ["client_account_id"]
+            isOneToOne: false
+            referencedRelation: "grow_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_vehicles_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
