@@ -21,6 +21,8 @@ import UsersRolesPage from "@/pages/settings/UsersRolesPage";
 import EmployeesPage from "@/pages/settings/EmployeesPage";
 import EmployeeDetailPage from "@/pages/settings/EmployeeDetailPage";
 import FleetPage from "@/pages/settings/FleetPage";
+import CustomerSetupPage from "@/pages/settings/CustomerSetupPage";
+import PriceListDetailPage from "@/pages/settings/PriceListDetailPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -80,7 +82,8 @@ export default function App() {
                     <Route path="/settings/employees" element={<EmployeesPage />} />
                     <Route path="/settings/employees/:id" element={<EmployeeDetailPage />} />
                     <Route path="/settings/fleet" element={<FleetPage />} />
-                    <Route path="/settings/customer-setup" element={<PlaceholderPage />} />
+                    <Route path="/settings/customer-setup" element={<CustomerSetupPage />} />
+                    <Route path="/settings/customer-setup/price-lists/:id" element={<PriceListDetailPage />} />
                     <Route path="/settings/equipment" element={<PlaceholderPage />} />
                     <Route path="/settings/ccrs" element={<PlaceholderPage />} />
                     <Route path="/settings/ai" element={<PlaceholderPage />} />

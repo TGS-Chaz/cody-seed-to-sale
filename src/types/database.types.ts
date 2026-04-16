@@ -11886,6 +11886,20 @@ export type Database = {
         }[]
       }
       get_coverage_audit: { Args: never; Returns: Json }
+      get_org_members_with_emails: {
+        Args: { p_org_id: string }
+        Returns: {
+          avatar_url: string
+          email: string
+          first_name: string
+          full_name: string
+          joined_at: string
+          last_name: string
+          last_sign_in_at: string
+          role: string
+          user_id: string
+        }[]
+      }
       get_own_brand_stores: {
         Args: { p_org_id: string }
         Returns: {
