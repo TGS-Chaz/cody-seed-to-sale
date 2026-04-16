@@ -144,6 +144,111 @@ export const EMPLOYMENT_STATUSES = [
 ] as const;
 export type EmploymentStatus = typeof EMPLOYMENT_STATUSES[number];
 
+// ─── grow_equipment ───────────────────────────────────────────────────────────
+export const EQUIPMENT_TYPES = [
+  "scale", "thermometer", "hygrometer", "co2_meter", "ph_meter",
+  "scanner", "printer",
+  "barcode_scanner", "rfid_reader", "label_printer", "environmental_sensor",
+  "camera", "tablet_kiosk",
+  "hvac", "lighting", "irrigation", "dehumidifier", "tool", "other",
+] as const;
+export type EquipmentType = typeof EQUIPMENT_TYPES[number];
+export const EQUIPMENT_TYPE_LABELS: Record<EquipmentType, string> = {
+  scale: "Scale",
+  thermometer: "Thermometer",
+  hygrometer: "Hygrometer",
+  co2_meter: "CO₂ Meter",
+  ph_meter: "pH Meter",
+  scanner: "Scanner",
+  printer: "Printer",
+  barcode_scanner: "Barcode Scanner",
+  rfid_reader: "RFID Reader",
+  label_printer: "Label Printer",
+  environmental_sensor: "Environmental Sensor",
+  camera: "Camera",
+  tablet_kiosk: "Tablet / Kiosk",
+  hvac: "HVAC",
+  lighting: "Lighting",
+  irrigation: "Irrigation",
+  dehumidifier: "Dehumidifier",
+  tool: "Tool",
+  other: "Other",
+};
+/** Equipment types that can be paired with a grow_hardware_devices record (integrated). */
+export const EQUIPMENT_INTEGRATABLE_TYPES: readonly EquipmentType[] = [
+  "scale", "barcode_scanner", "rfid_reader", "label_printer",
+  "environmental_sensor", "camera", "tablet_kiosk", "scanner", "printer",
+];
+
+export const EQUIPMENT_STATUSES = ["active", "maintenance", "out_of_service", "decommissioned"] as const;
+export type EquipmentStatus = typeof EQUIPMENT_STATUSES[number];
+export const EQUIPMENT_STATUS_LABELS: Record<EquipmentStatus, string> = {
+  active: "Active",
+  maintenance: "Maintenance",
+  out_of_service: "Out of Service",
+  decommissioned: "Decommissioned",
+};
+
+// ─── grow_hardware_devices ────────────────────────────────────────────────────
+export const HARDWARE_DEVICE_TYPES = [
+  "scale", "barcode_scanner", "rfid_reader", "label_printer",
+  "environmental_sensor", "camera", "tablet_kiosk", "other",
+] as const;
+export type HardwareDeviceType = typeof HARDWARE_DEVICE_TYPES[number];
+export const HARDWARE_DEVICE_TYPE_LABELS: Record<HardwareDeviceType, string> = {
+  scale: "Scale",
+  barcode_scanner: "Barcode Scanner",
+  rfid_reader: "RFID Reader",
+  label_printer: "Label Printer",
+  environmental_sensor: "Environmental Sensor",
+  camera: "Camera",
+  tablet_kiosk: "Tablet / Kiosk",
+  other: "Other",
+};
+export const HARDWARE_CONNECTION_TYPES = [
+  "bluetooth", "usb", "wifi", "ethernet", "cellular", "rs232",
+] as const;
+export type HardwareConnectionType = typeof HARDWARE_CONNECTION_TYPES[number];
+export const HARDWARE_CONNECTION_TYPE_LABELS: Record<HardwareConnectionType, string> = {
+  bluetooth: "Bluetooth", usb: "USB", wifi: "WiFi",
+  ethernet: "Ethernet", cellular: "Cellular", rs232: "RS-232",
+};
+export const HARDWARE_INTEGRATION_TYPES = [
+  "aranet", "trolmaster", "argus", "growlink",
+  "zebra", "dymo", "bluetooth_generic", "manual", "other",
+] as const;
+export type HardwareIntegrationType = typeof HARDWARE_INTEGRATION_TYPES[number];
+export const HARDWARE_INTEGRATION_TYPE_LABELS: Record<HardwareIntegrationType, string> = {
+  aranet: "Aranet",
+  trolmaster: "TrolMaster",
+  argus: "Argus",
+  growlink: "GrowLink",
+  zebra: "Zebra",
+  dymo: "Dymo",
+  bluetooth_generic: "Bluetooth (Generic)",
+  manual: "Manual",
+  other: "Other",
+};
+
+// ─── grow_calibration_log.pass_fail ──────────────────────────────────────────
+export const CALIBRATION_RESULTS = ["pass", "fail", "adjusted"] as const;
+export type CalibrationResult = typeof CALIBRATION_RESULTS[number];
+export const CALIBRATION_RESULT_LABELS: Record<CalibrationResult, string> = {
+  pass: "Pass",
+  fail: "Fail",
+  adjusted: "Adjusted",
+};
+
+/** UI-only calibration frequency presets. Maps to grow_equipment.calibration_frequency_days (integer). */
+export const CALIBRATION_FREQUENCIES = [
+  { id: "weekly",     days: 7,   label: "Weekly" },
+  { id: "monthly",    days: 30,  label: "Monthly" },
+  { id: "quarterly",  days: 90,  label: "Quarterly" },
+  { id: "semi_annual", days: 182, label: "Semi-Annual" },
+  { id: "annual",     days: 365, label: "Annual" },
+] as const;
+export type CalibrationFrequencyPreset = typeof CALIBRATION_FREQUENCIES[number]["id"];
+
 // ─── grow_facilities.license_type ─────────────────────────────────────────────
 export const FACILITY_LICENSE_TYPES = [
   "producer_tier_1", "producer_tier_2", "producer_tier_3",

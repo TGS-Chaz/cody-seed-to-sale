@@ -2271,34 +2271,55 @@ export type Database = {
       }
       grow_calibration_log: {
         Row: {
+          after_reading: string | null
+          before_reading: string | null
           calibrated_at: string
           calibrated_by: string | null
           certificate_url: string | null
           created_at: string | null
+          deviation: string | null
           equipment_id: string
           id: string
+          next_calibration_due: string | null
           notes: string | null
           pass_fail: string | null
+          reference_standard: string | null
+          technician_name: string | null
+          tolerance: string | null
         }
         Insert: {
+          after_reading?: string | null
+          before_reading?: string | null
           calibrated_at: string
           calibrated_by?: string | null
           certificate_url?: string | null
           created_at?: string | null
+          deviation?: string | null
           equipment_id: string
           id?: string
+          next_calibration_due?: string | null
           notes?: string | null
           pass_fail?: string | null
+          reference_standard?: string | null
+          technician_name?: string | null
+          tolerance?: string | null
         }
         Update: {
+          after_reading?: string | null
+          before_reading?: string | null
           calibrated_at?: string
           calibrated_by?: string | null
           certificate_url?: string | null
           created_at?: string | null
+          deviation?: string | null
           equipment_id?: string
           id?: string
+          next_calibration_due?: string | null
           notes?: string | null
           pass_fail?: string | null
+          reference_standard?: string | null
+          technician_name?: string | null
+          tolerance?: string | null
         }
         Relationships: [
           {
@@ -3460,16 +3481,24 @@ export type Database = {
           created_at: string | null
           equipment_type: string | null
           facility_id: string | null
+          hardware_device_id: string | null
           id: string
           is_active: boolean | null
           last_calibration_date: string | null
           make: string | null
           model: string | null
+          name: string | null
           next_calibration_due: string | null
           notes: string | null
           org_id: string
+          purchase_date: string | null
+          purchase_price: number | null
+          requires_calibration: boolean | null
           serial_number: string | null
+          status: string | null
           updated_at: string | null
+          vendor: string | null
+          warranty_expires: string | null
         }
         Insert: {
           area_id?: string | null
@@ -3478,16 +3507,24 @@ export type Database = {
           created_at?: string | null
           equipment_type?: string | null
           facility_id?: string | null
+          hardware_device_id?: string | null
           id?: string
           is_active?: boolean | null
           last_calibration_date?: string | null
           make?: string | null
           model?: string | null
+          name?: string | null
           next_calibration_due?: string | null
           notes?: string | null
           org_id: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          requires_calibration?: boolean | null
           serial_number?: string | null
+          status?: string | null
           updated_at?: string | null
+          vendor?: string | null
+          warranty_expires?: string | null
         }
         Update: {
           area_id?: string | null
@@ -3496,16 +3533,24 @@ export type Database = {
           created_at?: string | null
           equipment_type?: string | null
           facility_id?: string | null
+          hardware_device_id?: string | null
           id?: string
           is_active?: boolean | null
           last_calibration_date?: string | null
           make?: string | null
           model?: string | null
+          name?: string | null
           next_calibration_due?: string | null
           notes?: string | null
           org_id?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          requires_calibration?: boolean | null
           serial_number?: string | null
+          status?: string | null
           updated_at?: string | null
+          vendor?: string | null
+          warranty_expires?: string | null
         }
         Relationships: [
           {
@@ -3520,6 +3565,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "grow_facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_equipment_hardware_device_id_fkey"
+            columns: ["hardware_device_id"]
+            isOneToOne: false
+            referencedRelation: "grow_hardware_devices"
             referencedColumns: ["id"]
           },
           {
