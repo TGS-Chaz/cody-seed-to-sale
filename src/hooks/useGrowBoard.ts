@@ -345,7 +345,8 @@ export function useHarvestCycle() {
         strain_id: cycle.strain_id,
         grow_cycle_id: cycle.id,
         area_id: cycle.area_id,
-        harvest_type: "standard",
+        // Oct 2025 CCRS spec replaced 'standard' with 'full' for whole-plant harvests.
+        harvest_type: "full",
         status: "drying",
         harvest_started_at: new Date(opts.harvest_date).toISOString(),
         wet_weight_grams: opts.wet_weight_grams ?? null,

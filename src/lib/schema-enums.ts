@@ -140,12 +140,14 @@ export const CCRS_NOTIFICATION_PREFERENCE_LABELS: Record<CcrsNotificationPrefere
 
 /** Lowercase file-type identifiers for grow_org_settings.ccrs_upload_file_types[].
  * Note: these are kebab/lowercase — the CSV-file "FileType" column uses
- * CcrsUploadFileType (PascalCase) instead. */
+ * CcrsUploadFileType (PascalCase) instead.
+ *
+ * `harvest` was added Oct 2025 with the CCRS Harvest.CSV spec update. */
 export const CCRS_FILE_CATEGORIES = [
   "strain", "area", "product", "plant",
   "plantdestruction", "planttransfer",
   "inventory", "inventoryadjustment", "inventorytransfer",
-  "labtest", "sale", "manifest",
+  "labtest", "sale", "manifest", "harvest",
 ] as const;
 export type CcrsFileCategory = typeof CCRS_FILE_CATEGORIES[number];
 export const CCRS_FILE_CATEGORY_LABELS: Record<CcrsFileCategory, string> = {
@@ -161,6 +163,7 @@ export const CCRS_FILE_CATEGORY_LABELS: Record<CcrsFileCategory, string> = {
   labtest: "Lab Tests",
   sale: "Sales",
   manifest: "Manifests",
+  harvest: "Harvests",
 };
 
 export const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
@@ -388,10 +391,26 @@ export const FACILITY_LICENSE_TYPE_LABELS: Record<FacilityLicenseType, string> =
 };
 
 // ─── grow_harvests ────────────────────────────────────────────────────────────
-export const HARVEST_TYPES = ["standard", "manicure"] as const;
+/** CCRS Harvest.CSV spec values (Oct 2025 update). 'full' replaced the old
+ * 'standard' catch-all to distinguish full-plant harvests from partial
+ * harvests (selective topping). 'manicure' covers dry-trim sessions. */
+export const HARVEST_TYPES = ["full", "partial", "manicure"] as const;
 export type HarvestType = typeof HARVEST_TYPES[number];
+export const HARVEST_TYPE_LABELS: Record<HarvestType, string> = {
+  full: "Full",
+  partial: "Partial",
+  manicure: "Manicure",
+};
 export const HARVEST_STATUSES = ["active", "drying", "curing", "cured", "processing", "completed"] as const;
 export type HarvestStatus = typeof HARVEST_STATUSES[number];
+export const HARVEST_STATUS_LABELS: Record<HarvestStatus, string> = {
+  active: "Active",
+  drying: "Drying",
+  curing: "Curing",
+  cured: "Cured",
+  processing: "Processing",
+  completed: "Completed",
+};
 
 // ─── grow_inventory_adjustments.adjustment_reason (CCRS-exact) ────────────────
 export const CCRS_ADJUSTMENT_REASONS = [

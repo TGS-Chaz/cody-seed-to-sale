@@ -2033,6 +2033,7 @@ export type Database = {
           is_doh_compliant: boolean | null
           is_employee_sample: boolean | null
           is_marketplace: boolean | null
+          is_medical: boolean | null
           is_non_cannabis: boolean | null
           is_pack_to_order: boolean | null
           is_trade_sample: boolean | null
@@ -2070,6 +2071,7 @@ export type Database = {
           is_doh_compliant?: boolean | null
           is_employee_sample?: boolean | null
           is_marketplace?: boolean | null
+          is_medical?: boolean | null
           is_non_cannabis?: boolean | null
           is_pack_to_order?: boolean | null
           is_trade_sample?: boolean | null
@@ -2107,6 +2109,7 @@ export type Database = {
           is_doh_compliant?: boolean | null
           is_employee_sample?: boolean | null
           is_marketplace?: boolean | null
+          is_medical?: boolean | null
           is_non_cannabis?: boolean | null
           is_pack_to_order?: boolean | null
           is_trade_sample?: boolean | null
@@ -3842,6 +3845,9 @@ export type Database = {
         Row: {
           area_id: string | null
           ccrs_created_by_username: string | null
+          ccrs_external_identifier: string | null
+          ccrs_reported: boolean | null
+          ccrs_reported_at: string | null
           ccrs_updated_by_username: string | null
           completed_at: string | null
           created_at: string | null
@@ -3849,6 +3855,8 @@ export type Database = {
           cure_started_at: string | null
           cured_at: string | null
           dry_weight_grams: number | null
+          flower_lot_external_id: string | null
+          flower_lot_weight_grams: number | null
           grow_cycle_id: string | null
           harvest_started_at: string | null
           harvest_type: string
@@ -3856,8 +3864,11 @@ export type Database = {
           name: string
           notes: string | null
           org_id: string
+          other_material_lot_external_id: string | null
+          other_material_weight_grams: number | null
           status: string | null
           strain_id: string
+          total_plants_harvested: number | null
           updated_at: string | null
           waste_weight_grams: number | null
           wet_weight_grams: number | null
@@ -3865,6 +3876,9 @@ export type Database = {
         Insert: {
           area_id?: string | null
           ccrs_created_by_username?: string | null
+          ccrs_external_identifier?: string | null
+          ccrs_reported?: boolean | null
+          ccrs_reported_at?: string | null
           ccrs_updated_by_username?: string | null
           completed_at?: string | null
           created_at?: string | null
@@ -3872,6 +3886,8 @@ export type Database = {
           cure_started_at?: string | null
           cured_at?: string | null
           dry_weight_grams?: number | null
+          flower_lot_external_id?: string | null
+          flower_lot_weight_grams?: number | null
           grow_cycle_id?: string | null
           harvest_started_at?: string | null
           harvest_type: string
@@ -3879,8 +3895,11 @@ export type Database = {
           name: string
           notes?: string | null
           org_id: string
+          other_material_lot_external_id?: string | null
+          other_material_weight_grams?: number | null
           status?: string | null
           strain_id: string
+          total_plants_harvested?: number | null
           updated_at?: string | null
           waste_weight_grams?: number | null
           wet_weight_grams?: number | null
@@ -3888,6 +3907,9 @@ export type Database = {
         Update: {
           area_id?: string | null
           ccrs_created_by_username?: string | null
+          ccrs_external_identifier?: string | null
+          ccrs_reported?: boolean | null
+          ccrs_reported_at?: string | null
           ccrs_updated_by_username?: string | null
           completed_at?: string | null
           created_at?: string | null
@@ -3895,6 +3917,8 @@ export type Database = {
           cure_started_at?: string | null
           cured_at?: string | null
           dry_weight_grams?: number | null
+          flower_lot_external_id?: string | null
+          flower_lot_weight_grams?: number | null
           grow_cycle_id?: string | null
           harvest_started_at?: string | null
           harvest_type?: string
@@ -3902,8 +3926,11 @@ export type Database = {
           name?: string
           notes?: string | null
           org_id?: string
+          other_material_lot_external_id?: string | null
+          other_material_weight_grams?: number | null
           status?: string | null
           strain_id?: string
+          total_plants_harvested?: number | null
           updated_at?: string | null
           waste_weight_grams?: number | null
           wet_weight_grams?: number | null
@@ -4471,6 +4498,7 @@ export type Database = {
           accepted_quantity: number | null
           batch_id: string | null
           id: string
+          labtest_external_identifier: string | null
           manifest_id: string
           plant_id: string | null
           quantity: number
@@ -4483,6 +4511,7 @@ export type Database = {
           accepted_quantity?: number | null
           batch_id?: string | null
           id?: string
+          labtest_external_identifier?: string | null
           manifest_id: string
           plant_id?: string | null
           quantity: number
@@ -4495,6 +4524,7 @@ export type Database = {
           accepted_quantity?: number | null
           batch_id?: string | null
           id?: string
+          labtest_external_identifier?: string | null
           manifest_id?: string
           plant_id?: string | null
           quantity?: number
@@ -5830,6 +5860,7 @@ export type Database = {
           phase_changed_at: string | null
           phenotype_id: string | null
           plant_identifier: string | null
+          source_id: string | null
           source_type: string | null
           strain_id: string
           updated_at: string | null
@@ -5859,6 +5890,7 @@ export type Database = {
           phase_changed_at?: string | null
           phenotype_id?: string | null
           plant_identifier?: string | null
+          source_id?: string | null
           source_type?: string | null
           strain_id: string
           updated_at?: string | null
@@ -5888,6 +5920,7 @@ export type Database = {
           phase_changed_at?: string | null
           phenotype_id?: string | null
           plant_identifier?: string | null
+          source_id?: string | null
           source_type?: string | null
           strain_id?: string
           updated_at?: string | null
@@ -5934,6 +5967,13 @@ export type Database = {
             columns: ["phenotype_id"]
             isOneToOne: false
             referencedRelation: "grow_phenotypes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_plants_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "grow_sources"
             referencedColumns: ["id"]
           },
           {
@@ -7397,58 +7437,100 @@ export type Database = {
           acquired_date: string | null
           area_id: string | null
           batch_id: string | null
+          ccrs_notes: string | null
+          cost_per_unit: number | null
           created_at: string | null
           created_by: string | null
           current_quantity: number
+          cut_date: string | null
           external_id: string
+          germination_rate_expected: number | null
+          health_rating: string | null
           id: string
           initial_quantity: number
           is_active: boolean | null
+          is_autoflower: boolean | null
+          is_feminized: boolean | null
+          is_rooted: boolean | null
           mother_plant_id: string | null
           notes: string | null
           org_id: string
+          phenotype_id: string | null
+          root_date: string | null
+          rooting_hormone: string | null
+          rooting_medium: string | null
           source_type: string
           source_vendor: string | null
+          status: string | null
           strain_id: string
           updated_at: string | null
+          vendor_lot_number: string | null
         }
         Insert: {
           acquired_date?: string | null
           area_id?: string | null
           batch_id?: string | null
+          ccrs_notes?: string | null
+          cost_per_unit?: number | null
           created_at?: string | null
           created_by?: string | null
           current_quantity: number
+          cut_date?: string | null
           external_id: string
+          germination_rate_expected?: number | null
+          health_rating?: string | null
           id?: string
           initial_quantity: number
           is_active?: boolean | null
+          is_autoflower?: boolean | null
+          is_feminized?: boolean | null
+          is_rooted?: boolean | null
           mother_plant_id?: string | null
           notes?: string | null
           org_id: string
+          phenotype_id?: string | null
+          root_date?: string | null
+          rooting_hormone?: string | null
+          rooting_medium?: string | null
           source_type: string
           source_vendor?: string | null
+          status?: string | null
           strain_id: string
           updated_at?: string | null
+          vendor_lot_number?: string | null
         }
         Update: {
           acquired_date?: string | null
           area_id?: string | null
           batch_id?: string | null
+          ccrs_notes?: string | null
+          cost_per_unit?: number | null
           created_at?: string | null
           created_by?: string | null
           current_quantity?: number
+          cut_date?: string | null
           external_id?: string
+          germination_rate_expected?: number | null
+          health_rating?: string | null
           id?: string
           initial_quantity?: number
           is_active?: boolean | null
+          is_autoflower?: boolean | null
+          is_feminized?: boolean | null
+          is_rooted?: boolean | null
           mother_plant_id?: string | null
           notes?: string | null
           org_id?: string
+          phenotype_id?: string | null
+          root_date?: string | null
+          rooting_hormone?: string | null
+          rooting_medium?: string | null
           source_type?: string
           source_vendor?: string | null
+          status?: string | null
           strain_id?: string
           updated_at?: string | null
+          vendor_lot_number?: string | null
         }
         Relationships: [
           {
@@ -7477,6 +7559,13 @@ export type Database = {
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grow_sources_phenotype_id_fkey"
+            columns: ["phenotype_id"]
+            isOneToOne: false
+            referencedRelation: "grow_phenotypes"
             referencedColumns: ["id"]
           },
           {
