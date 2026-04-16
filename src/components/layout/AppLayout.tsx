@@ -22,6 +22,7 @@ import {
   Sunset,
   ChevronLeft,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { NavLink } from "@/components/shared/NavLink";
 import { useAuth } from "@/lib/auth";
@@ -154,6 +155,24 @@ export default function AppLayout() {
             ))}
           </LayoutGroup>
         </nav>
+
+        {/* Ask Cody button */}
+        <div className="px-3 pb-2">
+          <button
+            onClick={() => window.dispatchEvent(new Event("open-cody-chat"))}
+            className={`flex items-center ${collapsed ? "justify-center px-2" : "gap-2 px-3"} w-full py-2 rounded-lg text-[12px] font-medium transition-all duration-150 hover:bg-primary/10 text-muted-foreground hover:text-primary`}
+            style={{ background: "hsl(168 100% 42% / 0.05)", border: "1px solid hsl(168 100% 42% / 0.12)" }}
+            title="Ask Cody"
+          >
+            <img src={codyIcon} alt="" className="w-4 h-4 shrink-0" />
+            {!collapsed && (
+              <>
+                <span>Ask Cody</span>
+                <Sparkles className="w-3 h-3 ml-auto text-primary/50" />
+              </>
+            )}
+          </button>
+        </div>
 
         {/* Bottom — user + sign out */}
         <div
