@@ -603,6 +603,48 @@ export const SOP_CATEGORIES = [
 ] as const;
 export type SopCategory = typeof SOP_CATEGORIES[number];
 
+// ─── grow_sources ─────────────────────────────────────────────────────────────
+export const SOURCE_TYPES = ["seed", "clone", "tissue_culture"] as const;
+export type SourceType = typeof SOURCE_TYPES[number];
+export const SOURCE_TYPE_LABELS: Record<SourceType, string> = {
+  seed: "Seed",
+  clone: "Clone",
+  tissue_culture: "Tissue Culture",
+};
+export const SOURCE_TYPE_COLORS: Record<SourceType, { bg: string; text: string; ring: string; hex: string; iconBg: string }> = {
+  seed:           { bg: "bg-amber-500/15",  text: "text-amber-500",  ring: "ring-amber-500/40",  hex: "#F59E0B", iconBg: "bg-amber-500/15" },
+  clone:          { bg: "bg-green-500/15",  text: "text-green-500",  ring: "ring-green-500/40",  hex: "#22C55E", iconBg: "bg-green-500/15" },
+  tissue_culture: { bg: "bg-purple-500/15", text: "text-purple-500", ring: "ring-purple-500/40", hex: "#A855F7", iconBg: "bg-purple-500/15" },
+};
+
+export const SOURCE_STATUSES = ["available", "in_cycle", "depleted", "destroyed", "quarantine"] as const;
+export type SourceStatus = typeof SOURCE_STATUSES[number];
+export const SOURCE_STATUS_LABELS: Record<SourceStatus, string> = {
+  available: "Available",
+  in_cycle: "In Cycle",
+  depleted: "Depleted",
+  destroyed: "Destroyed",
+  quarantine: "Quarantine",
+};
+
+export const ROOTING_MEDIUMS = ["rockwool", "rapid_rooter", "peat_pellet", "aero_cloner", "water", "soil", "other"] as const;
+export type RootingMedium = typeof ROOTING_MEDIUMS[number];
+export const ROOTING_MEDIUM_LABELS: Record<RootingMedium, string> = {
+  rockwool: "Rockwool",
+  rapid_rooter: "Rapid Rooter",
+  peat_pellet: "Peat Pellet",
+  aero_cloner: "Aero-cloner",
+  water: "Water",
+  soil: "Soil",
+  other: "Other",
+};
+
+export const HEALTH_RATINGS = ["excellent", "good", "fair", "poor"] as const;
+export type HealthRating = typeof HEALTH_RATINGS[number];
+export const HEALTH_RATING_LABELS: Record<HealthRating, string> = {
+  excellent: "Excellent", good: "Good", fair: "Fair", poor: "Poor",
+};
+
 // ─── grow_strains.type ────────────────────────────────────────────────────────
 /** CCRS-exact casing — these are the values allowed by the
  * grow_strains_type_check constraint AND required in the CCRS Strain.csv
