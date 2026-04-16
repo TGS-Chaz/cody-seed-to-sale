@@ -15,18 +15,23 @@ import { cn } from "@/lib/utils";
 interface ScrollableModalProps {
   open: boolean;
   onClose: () => void;
-  /** Max width class. Use "max-w-[480px]" (default), "max-w-[640px]" (forms), "max-w-[900px]" (wide content). */
+  /** Max width class. Use "sm" (480px), "md" (640px), "lg" (760px), "xl" (900px). */
   size?: "sm" | "md" | "lg" | "xl";
-  /** Optional close-on-backdrop-click. Default true. */
   closeOnBackdrop?: boolean;
-  /** Optional close-on-Escape. Default true. */
   closeOnEscape?: boolean;
   header: ReactNode;
   footer?: ReactNode;
   children: ReactNode;
   className?: string;
-  /** When the body is rendered inside a <form>, pass the onSubmit here so buttons in the footer can be type="submit". */
+  /** When the body is rendered inside a <form>, pass onSubmit so footer buttons can be type="submit". */
   onSubmit?: (e: React.FormEvent) => void;
+  /**
+   * By default, children are wrapped in a `<div className="flex-1 min-h-0 overflow-y-auto">`.
+   * Set to true if the caller needs to supply its own flex layout inside the body
+   * (e.g. a two-column layout with independent scroll regions). Caller is responsible
+   * for including `flex-1 min-h-0` on its root container.
+   */
+  customBody?: boolean;
   /** Raise the z-index if nesting modals (default 70 backdrop / 71 content). */
   zIndex?: number;
 }
@@ -49,6 +54,7 @@ export default function ScrollableModal({
   children,
   className,
   onSubmit,
+  customBody,
   zIndex = 70,
 }: ScrollableModalProps) {
   useEffect(() => {
@@ -58,9 +64,15 @@ export default function ScrollableModal({
     return () => window.removeEventListener("keydown", handler);
   }, [open, closeOnEscape, onClose]);
 
-  const bodyInner = (
-    <div className="flex-1 min-h-0 overflow-y-auto">
-      {children}
+  const bodyInner = customBody ? (
+    children
+  ) : (
+    <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
+  );
+
+  const footerNode = footer && (
+    <div className="flex items-center justify-end gap-2 px-6 h-14 border-t border-border shrink-0 bg-card">
+      {footer}
     </div>
   );
 
@@ -82,16 +94,15 @@ export default function ScrollableModal({
             exit={{ opacity: 0, scale: 0.97, y: 12 }}
             transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
             className={cn(
-              "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-h-[90vh] flex flex-col rounded-xl border border-border bg-card shadow-2xl",
+              "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-h-[90vh] sm:max-h-[90vh] flex flex-col rounded-xl border border-border bg-card shadow-2xl",
               SIZE_CLASS[size],
               className,
             )}
             style={{ zIndex: zIndex + 1 }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Sticky header */}
             <div className="flex items-center justify-between px-6 h-14 border-b border-border shrink-0">
-              <div className="min-w-0">{header}</div>
+              <div className="min-w-0 flex-1">{header}</div>
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-md hover:bg-accent text-muted-foreground shrink-0 ml-2"
@@ -101,27 +112,15 @@ export default function ScrollableModal({
               </button>
             </div>
 
-            {/* Scrollable body — wrapped in a <form> if onSubmit provided */}
             {onSubmit ? (
-              <form
-                onSubmit={onSubmit}
-                className="flex flex-col flex-1 min-h-0 overflow-hidden"
-              >
+              <form onSubmit={onSubmit} className="flex flex-col flex-1 min-h-0 overflow-hidden">
                 {bodyInner}
-                {footer && (
-                  <div className="flex items-center justify-end gap-2 px-6 h-14 border-t border-border shrink-0 bg-card">
-                    {footer}
-                  </div>
-                )}
+                {footerNode}
               </form>
             ) : (
               <>
                 {bodyInner}
-                {footer && (
-                  <div className="flex items-center justify-end gap-2 px-6 h-14 border-t border-border shrink-0 bg-card">
-                    {footer}
-                  </div>
-                )}
+                {footerNode}
               </>
             )}
           </motion.div>

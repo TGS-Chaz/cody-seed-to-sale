@@ -153,6 +153,27 @@ Every page follows this structure:
 - Footer with Cancel + Primary action
 - Form modals: group fields with small section headers, progressive disclosure for advanced fields
 
+### Modal Layout (MANDATORY for all form modals)
+
+Every form modal MUST follow the sticky-header / scrollable-body / sticky-footer pattern. Use the `ScrollableModal` primitive at `src/components/ui/scrollable-modal.tsx` for all new modals.
+
+Requirements:
+- **DialogContent**: `max-h-[90vh]` on desktop, `max-h-screen` on mobile, `flex flex-col`
+- **Header**: `flex-shrink-0`, sticky top, title + close button
+- **Body wrapper**: `flex-1 min-h-0 overflow-y-auto` — the `min-h-0` is **CRITICAL**. Without it, flex children refuse to shrink below their content size and the footer gets pushed off-screen.
+- **Footer**: `flex-shrink-0`, sticky bottom, Cancel + Save always visible
+- Subtle border or shadow on header/footer when body has overflow (visual affordance)
+
+The `ScrollableModal` primitive encapsulates all of this — prefer it over hand-rolling Dialog structure.
+
+**Cancel and Save buttons MUST always be reachable regardless of:**
+- Form length
+- Progressive disclosure state
+- Viewport height
+- Mobile vs desktop
+
+Failure to follow this pattern = bug. The Employees modal hit this exact bug on 2026-04-16 — `min-h-0` was missing and the footer got pushed beyond `max-h-[90vh]`.
+
 ### Form Fields
 - Label above (text-sm font-medium)
 - Input full-width, 40px tall, rounded-md
