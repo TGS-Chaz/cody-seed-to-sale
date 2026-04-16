@@ -71,6 +71,90 @@ export const PAYMENT_TERMS_LABELS: Record<PaymentTerms, string> = {
   custom: "Custom",
 };
 
+// ─── grow_org_settings (CCRS + WCIA + AI + integrations) ────────────────────
+export const CCRS_INTEGRATOR_STATUSES = ["not_applied", "pending", "approved", "suspended"] as const;
+export type CcrsIntegratorStatus = typeof CCRS_INTEGRATOR_STATUSES[number];
+export const CCRS_INTEGRATOR_STATUS_LABELS: Record<CcrsIntegratorStatus, string> = {
+  not_applied: "Not Applied",
+  pending: "Pending Approval",
+  approved: "Approved",
+  suspended: "Suspended",
+};
+
+export const CCRS_AUTO_UPLOAD_FREQUENCIES = ["manual", "daily", "twice_weekly", "weekly"] as const;
+export type CcrsAutoUploadFrequency = typeof CCRS_AUTO_UPLOAD_FREQUENCIES[number];
+export const CCRS_AUTO_UPLOAD_FREQUENCY_LABELS: Record<CcrsAutoUploadFrequency, string> = {
+  manual: "Manual Only",
+  daily: "Daily",
+  twice_weekly: "Twice Weekly",
+  weekly: "Weekly",
+};
+
+export const CCRS_NOTIFICATION_PREFERENCES = ["email", "in_app", "both", "none"] as const;
+export type CcrsNotificationPreference = typeof CCRS_NOTIFICATION_PREFERENCES[number];
+export const CCRS_NOTIFICATION_PREFERENCE_LABELS: Record<CcrsNotificationPreference, string> = {
+  email: "Email",
+  in_app: "In-App",
+  both: "Email & In-App",
+  none: "None",
+};
+
+/** Lowercase file-type identifiers for grow_org_settings.ccrs_upload_file_types[].
+ * Note: these are kebab/lowercase — the CSV-file "FileType" column uses
+ * CcrsUploadFileType (PascalCase) instead. */
+export const CCRS_FILE_CATEGORIES = [
+  "strain", "area", "product", "plant",
+  "plantdestruction", "planttransfer",
+  "inventory", "inventoryadjustment", "inventorytransfer",
+  "labtest", "sale", "manifest",
+] as const;
+export type CcrsFileCategory = typeof CCRS_FILE_CATEGORIES[number];
+export const CCRS_FILE_CATEGORY_LABELS: Record<CcrsFileCategory, string> = {
+  strain: "Strains",
+  area: "Areas",
+  product: "Products",
+  plant: "Plants",
+  plantdestruction: "Plant Destructions",
+  planttransfer: "Plant Transfers",
+  inventory: "Inventory",
+  inventoryadjustment: "Inventory Adjustments",
+  inventorytransfer: "Inventory Transfers",
+  labtest: "Lab Tests",
+  sale: "Sales",
+  manifest: "Manifests",
+};
+
+export const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+export type DayOfWeekName = typeof DAYS_OF_WEEK[number];
+export const DAY_OF_WEEK_LABELS: Record<DayOfWeekName, string> = {
+  monday: "Mon", tuesday: "Tue", wednesday: "Wed", thursday: "Thu",
+  friday: "Fri", saturday: "Sat", sunday: "Sun",
+};
+
+export const WCIA_HOSTING_TYPES = ["cody_hosted", "self_hosted"] as const;
+export type WciaHostingType = typeof WCIA_HOSTING_TYPES[number];
+export const WCIA_HOSTING_TYPE_LABELS: Record<WciaHostingType, string> = {
+  cody_hosted: "Cody Grow Hosted",
+  self_hosted: "Self-Hosted URL",
+};
+
+/** Cody personality JSONB shape — stored on grow_org_settings.cody_personality. */
+export const CODY_RESPONSE_STYLES = ["concise", "balanced", "detailed"] as const;
+export type CodyResponseStyle = typeof CODY_RESPONSE_STYLES[number];
+export const CODY_RESPONSE_STYLE_LABELS: Record<CodyResponseStyle, string> = {
+  concise: "Concise",
+  balanced: "Balanced",
+  detailed: "Detailed",
+};
+
+export const CODY_TONES = ["professional", "friendly", "technical"] as const;
+export type CodyTone = typeof CODY_TONES[number];
+export const CODY_TONE_LABELS: Record<CodyTone, string> = {
+  professional: "Professional",
+  friendly: "Friendly",
+  technical: "Technical",
+};
+
 // ─── grow_cycles.phase ────────────────────────────────────────────────────────
 export const CYCLE_PHASES = [
   "immature", "vegetative", "flowering", "ready_for_harvest", "harvesting", "completed",

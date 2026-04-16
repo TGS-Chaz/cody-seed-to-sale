@@ -5159,20 +5159,49 @@ export type Database = {
       }
       grow_org_settings: {
         Row: {
+          api_key: string | null
+          api_key_generated_at: string | null
           auto_generate_barcodes: boolean | null
           ccrs_auto_upload: boolean | null
+          ccrs_auto_upload_frequency: string | null
           ccrs_integrator_approved: boolean | null
+          ccrs_integrator_id: string | null
+          ccrs_integrator_status: string | null
           ccrs_location_code: string | null
+          ccrs_notification_preference: string | null
+          ccrs_notification_recipients: string[] | null
           ccrs_reporting_email: string | null
+          ccrs_saw_password_encrypted: string | null
+          ccrs_saw_username: string | null
+          ccrs_secondary_reporting_email: string | null
+          ccrs_submitted_by_username: string | null
+          ccrs_upload_days: string[] | null
+          ccrs_upload_file_types: string[] | null
+          ccrs_upload_time: string | null
+          cody_personality: Json | null
           created_at: string | null
           default_inventory_label_template_id: string | null
           default_manifest_template_id: string | null
           default_product_label_template_id: string | null
           default_route_id: string | null
+          enable_ai_anomaly_detection: boolean | null
+          enable_ai_compliance_reminders: boolean | null
+          enable_ai_crop_steering: boolean | null
+          enable_ai_customer_insights: boolean | null
+          enable_ai_demand_forecasting: boolean | null
           enable_ai_harvest_timing: boolean | null
           enable_ai_insights: boolean | null
+          enable_ai_note_summarization: boolean | null
+          enable_ai_price_optimization: boolean | null
+          enable_ai_report_narratives: boolean | null
+          enable_ai_smart_replies: boolean | null
+          enable_ai_smart_scheduling: boolean | null
+          enable_ai_task_assignment: boolean | null
           enable_ai_yield_predictions: boolean | null
+          enable_cross_product_crm: boolean | null
+          enable_cross_product_intel: boolean | null
           environmental_thresholds: Json | null
+          integrations: Json | null
           org_id: string
           primary_color: string | null
           quickbooks_company_id: string | null
@@ -5182,22 +5211,55 @@ export type Database = {
           secondary_color: string | null
           updated_at: string | null
           use_pack_to_order: boolean | null
+          wcia_enabled: boolean | null
+          wcia_hosting_type: string | null
+          wcia_link_expiry_days: number | null
+          wcia_self_hosted_url: string | null
         }
         Insert: {
+          api_key?: string | null
+          api_key_generated_at?: string | null
           auto_generate_barcodes?: boolean | null
           ccrs_auto_upload?: boolean | null
+          ccrs_auto_upload_frequency?: string | null
           ccrs_integrator_approved?: boolean | null
+          ccrs_integrator_id?: string | null
+          ccrs_integrator_status?: string | null
           ccrs_location_code?: string | null
+          ccrs_notification_preference?: string | null
+          ccrs_notification_recipients?: string[] | null
           ccrs_reporting_email?: string | null
+          ccrs_saw_password_encrypted?: string | null
+          ccrs_saw_username?: string | null
+          ccrs_secondary_reporting_email?: string | null
+          ccrs_submitted_by_username?: string | null
+          ccrs_upload_days?: string[] | null
+          ccrs_upload_file_types?: string[] | null
+          ccrs_upload_time?: string | null
+          cody_personality?: Json | null
           created_at?: string | null
           default_inventory_label_template_id?: string | null
           default_manifest_template_id?: string | null
           default_product_label_template_id?: string | null
           default_route_id?: string | null
+          enable_ai_anomaly_detection?: boolean | null
+          enable_ai_compliance_reminders?: boolean | null
+          enable_ai_crop_steering?: boolean | null
+          enable_ai_customer_insights?: boolean | null
+          enable_ai_demand_forecasting?: boolean | null
           enable_ai_harvest_timing?: boolean | null
           enable_ai_insights?: boolean | null
+          enable_ai_note_summarization?: boolean | null
+          enable_ai_price_optimization?: boolean | null
+          enable_ai_report_narratives?: boolean | null
+          enable_ai_smart_replies?: boolean | null
+          enable_ai_smart_scheduling?: boolean | null
+          enable_ai_task_assignment?: boolean | null
           enable_ai_yield_predictions?: boolean | null
+          enable_cross_product_crm?: boolean | null
+          enable_cross_product_intel?: boolean | null
           environmental_thresholds?: Json | null
+          integrations?: Json | null
           org_id: string
           primary_color?: string | null
           quickbooks_company_id?: string | null
@@ -5207,22 +5269,55 @@ export type Database = {
           secondary_color?: string | null
           updated_at?: string | null
           use_pack_to_order?: boolean | null
+          wcia_enabled?: boolean | null
+          wcia_hosting_type?: string | null
+          wcia_link_expiry_days?: number | null
+          wcia_self_hosted_url?: string | null
         }
         Update: {
+          api_key?: string | null
+          api_key_generated_at?: string | null
           auto_generate_barcodes?: boolean | null
           ccrs_auto_upload?: boolean | null
+          ccrs_auto_upload_frequency?: string | null
           ccrs_integrator_approved?: boolean | null
+          ccrs_integrator_id?: string | null
+          ccrs_integrator_status?: string | null
           ccrs_location_code?: string | null
+          ccrs_notification_preference?: string | null
+          ccrs_notification_recipients?: string[] | null
           ccrs_reporting_email?: string | null
+          ccrs_saw_password_encrypted?: string | null
+          ccrs_saw_username?: string | null
+          ccrs_secondary_reporting_email?: string | null
+          ccrs_submitted_by_username?: string | null
+          ccrs_upload_days?: string[] | null
+          ccrs_upload_file_types?: string[] | null
+          ccrs_upload_time?: string | null
+          cody_personality?: Json | null
           created_at?: string | null
           default_inventory_label_template_id?: string | null
           default_manifest_template_id?: string | null
           default_product_label_template_id?: string | null
           default_route_id?: string | null
+          enable_ai_anomaly_detection?: boolean | null
+          enable_ai_compliance_reminders?: boolean | null
+          enable_ai_crop_steering?: boolean | null
+          enable_ai_customer_insights?: boolean | null
+          enable_ai_demand_forecasting?: boolean | null
           enable_ai_harvest_timing?: boolean | null
           enable_ai_insights?: boolean | null
+          enable_ai_note_summarization?: boolean | null
+          enable_ai_price_optimization?: boolean | null
+          enable_ai_report_narratives?: boolean | null
+          enable_ai_smart_replies?: boolean | null
+          enable_ai_smart_scheduling?: boolean | null
+          enable_ai_task_assignment?: boolean | null
           enable_ai_yield_predictions?: boolean | null
+          enable_cross_product_crm?: boolean | null
+          enable_cross_product_intel?: boolean | null
           environmental_thresholds?: Json | null
+          integrations?: Json | null
           org_id?: string
           primary_color?: string | null
           quickbooks_company_id?: string | null
@@ -5232,6 +5327,10 @@ export type Database = {
           secondary_color?: string | null
           updated_at?: string | null
           use_pack_to_order?: boolean | null
+          wcia_enabled?: boolean | null
+          wcia_hosting_type?: string | null
+          wcia_link_expiry_days?: number | null
+          wcia_self_hosted_url?: string | null
         }
         Relationships: [
           {
