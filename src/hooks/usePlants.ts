@@ -515,7 +515,159 @@ export function usePlantTasks(plantId: string | undefined) {
   return { data, loading };
 }
 
-/** Placeholder for future measurements table. Returns [] for now. */
-export function usePlantMeasurements(_plantId: string | undefined) {
-  return { data: [] as any[], loading: false };
+/** Plant measurements live in grow_logs with log_type='measurement' and the
+ * measurements JSONB column. This hook fetches and reshapes them so the
+ * detail page can render a table + growth chart without understanding the
+ * grow_logs polymorphism. */
+export function usePlantMeasurements(plantId: string | undefined) {
+  const { orgId } = useOrg();
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!orgId || !plantId) { setData([]); setLoading(false); return; }
+    let cancelled = false;
+    (async () => {
+      const { data: logs } = await supabase
+        .from("grow_logs")
+        .select("*")
+        .eq("org_id", orgId)
+        .eq("plant_id", plantId)
+        .eq("log_type", "measurement")
+        .order("recorded_at", { ascending: false });
+      if (cancelled) return;
+      // Flatten the measurements JSONB → one row per key:value pair so the
+      // table can show Date / Type / Value / Unit / Notes cleanly.
+      const rows: any[] = [];
+      (logs ?? []).forEach((l: any) => {
+        const m = l.measurements ?? {};
+        const recorded_by = l.recorded_by;
+        Object.entries(m).forEach(([key, v]: [string, any]) => {
+          if (v && typeof v === "object") {
+            rows.push({
+              id: `${l.id}-${key}`,
+              log_id: l.id,
+              recorded_at: l.recorded_at,
+              recorded_by,
+              type: key,
+              value: v.value ?? null,
+              unit: v.unit ?? null,
+              notes: l.content ?? null,
+            });
+          } else {
+            rows.push({
+              id: `${l.id}-${key}`,
+              log_id: l.id,
+              recorded_at: l.recorded_at,
+              recorded_by,
+              type: key,
+              value: v,
+              unit: null,
+              notes: l.content ?? null,
+            });
+          }
+        });
+      });
+      setData(rows);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [orgId, plantId, tick]);
+
+  const refresh = useCallback(() => setTick((t) => t + 1), []);
+  return { data, loading, refresh };
 }
+
+// ─── Grow log + measurement creation ─────────────────────────────────────────
+
+export interface GrowLogInput {
+  plant_id?: string | null;
+  grow_cycle_id?: string | null;
+  area_id?: string | null;
+  harvest_id?: string | null;
+  batch_id?: string | null;
+  log_type: "observation" | "measurement" | "technique" | "issue" | "intervention" | "milestone" | "note";
+  title?: string | null;
+  content?: string | null;
+  measurements?: Record<string, any> | null;
+  photo_urls?: string[] | null;
+  tags?: string[] | null;
+  recorded_at?: string;
+}
+
+export function useCreateGrowLog() {
+  const { user } = useAuth();
+  const { orgId } = useOrg();
+  return useCallback(async (input: GrowLogInput) => {
+    if (!orgId) throw new Error("No active org");
+    const payload = {
+      org_id: orgId,
+      plant_id: input.plant_id ?? null,
+      grow_cycle_id: input.grow_cycle_id ?? null,
+      area_id: input.area_id ?? null,
+      harvest_id: input.harvest_id ?? null,
+      batch_id: input.batch_id ?? null,
+      log_type: input.log_type,
+      title: input.title ?? null,
+      content: input.content ?? null,
+      measurements: input.measurements ?? null,
+      photo_urls: input.photo_urls ?? null,
+      tags: input.tags ?? null,
+      recorded_by: user?.id ?? null,
+      recorded_at: input.recorded_at ?? new Date().toISOString(),
+    };
+    const { data: row, error: err } = await supabase.from("grow_logs").insert(payload).select("*").single();
+    if (err) throw err;
+    return row;
+  }, [orgId, user?.id]);
+}
+
+export interface MeasurementInput {
+  plant_id: string;
+  type: string;   // height, width, canopy_spread, stem_diameter, internodal_distance, other
+  value: number;
+  unit?: string | null;
+  notes?: string | null;
+  recorded_at?: string;
+}
+
+export function useCreateMeasurement() {
+  const createLog = useCreateGrowLog();
+  return useCallback(async (input: MeasurementInput) => {
+    return createLog({
+      plant_id: input.plant_id,
+      log_type: "measurement",
+      title: `${input.type.replace(/_/g, " ")} measurement`,
+      content: input.notes ?? null,
+      measurements: { [input.type]: { value: input.value, unit: input.unit ?? null } },
+      recorded_at: input.recorded_at,
+    });
+  }, [createLog]);
+}
+
+export const MEASUREMENT_TYPES = [
+  "height", "width", "canopy_spread", "stem_diameter", "internodal_distance", "other",
+] as const;
+export const MEASUREMENT_TYPE_LABELS: Record<typeof MEASUREMENT_TYPES[number], string> = {
+  height: "Height",
+  width: "Width",
+  canopy_spread: "Canopy spread",
+  stem_diameter: "Stem diameter",
+  internodal_distance: "Internodal distance",
+  other: "Other",
+};
+export const MEASUREMENT_UNITS = ["in", "cm", "mm"] as const;
+
+export const GROW_LOG_TYPES = [
+  "observation", "measurement", "technique", "issue", "intervention", "milestone", "note",
+] as const;
+export const GROW_LOG_TYPE_LABELS: Record<typeof GROW_LOG_TYPES[number], string> = {
+  observation: "Observation",
+  measurement: "Measurement",
+  technique: "Technique",
+  issue: "Issue",
+  intervention: "Intervention",
+  milestone: "Milestone",
+  note: "Note",
+};

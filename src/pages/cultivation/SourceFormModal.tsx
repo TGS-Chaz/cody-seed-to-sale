@@ -26,6 +26,15 @@ interface Props {
   editing?: Source | null;
   /** Defaults the form to a specific source type (from the empty-state CTAs). */
   initialType?: SourceType;
+  /** Pre-fill strain (e.g. from Take Clones on a plant detail page). */
+  initialStrainId?: string;
+  /** Pre-fill mother plant (e.g. from Take Clones on a mother plant). */
+  initialMotherPlantId?: string;
+  /** Pre-fill area (e.g. mother's current area for clones). */
+  initialAreaId?: string;
+  /** Fields to lock so the user can't change them — used by Take Clones
+   * to keep type=clone + strain=mother's strain + mother fixed. */
+  lockedFields?: Array<"source_type" | "strain_id" | "mother_plant_id" | "area_id">;
 }
 
 interface StrainOption { id: string; name: string; type: string | null }
@@ -39,7 +48,10 @@ const SOURCE_ICONS: Record<SourceType, React.ComponentType<{ className?: string 
   tissue_culture: FlaskConical,
 };
 
-export default function SourceFormModal({ open, onClose, onSave, editing, initialType }: Props) {
+export default function SourceFormModal({
+  open, onClose, onSave, editing, initialType,
+  initialStrainId, initialMotherPlantId, initialAreaId, lockedFields = [],
+}: Props) {
   const isEdit = !!editing;
   const { orgId } = useOrg();
 
@@ -110,15 +122,20 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
     } else {
       setForm({
         source_type: initialType ?? "seed",
-        strain_id: "",
-        area_id: "",
+        strain_id: initialStrainId ?? "",
+        area_id: initialAreaId ?? "",
         quantity: 1,
         date: new Date().toISOString().slice(0, 10),
         status: "available",
+        mother_plant_id: initialMotherPlantId ?? null,
       });
+      // For Take Clones we already know the mother plant — don't force
+      // external mode even if the library happens to be empty.
+      if (initialMotherPlantId) setUseExternalMother(false);
       setShowAdvanced(false);
     }
-  }, [open, editing, initialType]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editing, initialType, initialStrainId, initialMotherPlantId, initialAreaId]);
 
   const set = <K extends keyof SourceInput>(field: K, value: SourceInput[K]) => {
     setForm((f) => ({ ...f, [field]: value }));
@@ -202,16 +219,17 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
               const Icon = SOURCE_ICONS[t];
               const color = SOURCE_TYPE_COLORS[t];
               const selected = form.source_type === t;
+              const typeLocked = isEdit || lockedFields.includes("source_type");
               return (
                 <button
                   key={t}
                   type="button"
-                  disabled={isEdit}
+                  disabled={typeLocked}
                   onClick={() => set("source_type", t)}
                   className={cn(
                     "flex items-center justify-center gap-1.5 h-10 rounded-lg border text-[13px] font-medium transition-all",
                     selected ? `${color.bg} ${color.text} border-transparent ring-2 ring-offset-1 ring-offset-background` : "bg-muted/30 border-border text-muted-foreground hover:text-foreground",
-                    isEdit && "cursor-not-allowed opacity-70",
+                    typeLocked && "cursor-not-allowed opacity-70",
                   )}
                   style={selected ? { boxShadow: `0 0 0 2px ${color.hex}40` } : undefined}
                 >
@@ -222,6 +240,7 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
             })}
           </div>
           {isEdit && <p className="text-[11px] text-muted-foreground/70">Type can't change after creation — add a new source instead.</p>}
+          {!isEdit && lockedFields.includes("source_type") && <p className="text-[11px] text-muted-foreground/70">Locked by the flow that opened this form.</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -239,7 +258,11 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
                   set("mother_plant_id", null);
                   set("phenotype_id", null);
                 }}
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                disabled={lockedFields.includes("strain_id")}
+                className={cn(
+                  "flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring",
+                  lockedFields.includes("strain_id") && "opacity-70 cursor-not-allowed",
+                )}
               >
                 <option value="">— Select strain —</option>
                 {strains.map((s) => <option key={s.id} value={s.id}>{s.name}{s.type ? ` (${s.type})` : ""}</option>)}
@@ -270,7 +293,11 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
               <select
                 value={form.area_id}
                 onChange={(e) => set("area_id", e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                disabled={lockedFields.includes("area_id")}
+                className={cn(
+                  "flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring",
+                  lockedFields.includes("area_id") && "opacity-70 cursor-not-allowed",
+                )}
               >
                 <option value="">— Select area —</option>
                 {areas.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
@@ -282,7 +309,15 @@ export default function SourceFormModal({ open, onClose, onSave, editing, initia
         {/* Clone-specific: mother plant picker on the required step */}
         {isClone && (
           <Field label="Mother Plant">
-            {useExternalMother ? (
+            {lockedFields.includes("mother_plant_id") ? (
+              <div className="flex items-center gap-2 h-10 px-3 rounded-lg border border-border bg-muted/30">
+                <GitBranch className="w-3.5 h-3.5 text-green-500" />
+                <span className="text-[13px] font-mono text-foreground">
+                  {motherPlants.find((m) => m.id === form.mother_plant_id)?.plant_identifier ?? form.mother_plant_id?.slice(0, 8) ?? "—"}
+                </span>
+                <span className="text-[11px] text-muted-foreground ml-auto">Locked</span>
+              </div>
+            ) : useExternalMother ? (
               <div className="space-y-1.5">
                 <div className="h-10 px-3 flex items-center text-[12px] text-muted-foreground border border-border bg-muted/30 rounded-lg italic">
                   Unknown / External mother
