@@ -45,6 +45,8 @@ import HarvestsPage from "@/pages/cultivation/HarvestsPage";
 import HarvestDetailPage from "@/pages/cultivation/HarvestDetailPage";
 import BatchesPage from "@/pages/inventory/BatchesPage";
 import BatchDetailPage from "@/pages/inventory/BatchDetailPage";
+import QAPage from "@/pages/inventory/QAPage";
+import QALotDetailPage from "@/pages/inventory/QALotDetailPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -96,7 +98,8 @@ export default function App() {
                     {/* Inventory */}
                     <Route path="/inventory/batches" element={<BatchesPage />} />
                     <Route path="/inventory/batches/:id" element={<BatchDetailPage />} />
-                    <Route path="/inventory/qa" element={<PlaceholderPage />} />
+                    <Route path="/inventory/qa" element={<QAPage />} />
+                    <Route path="/inventory/qa/:id" element={<QALotDetailPage />} />
                     <Route path="/inventory/production" element={<PlaceholderPage />} />
                     <Route path="/inventory/labels" element={<PlaceholderPage />} />
                     <Route path="/inventory/disposals" element={<PlaceholderPage />} />
