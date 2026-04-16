@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./auth";
 
@@ -85,23 +85,27 @@ export function OrgProvider({ children }: { children: ReactNode }) {
     load();
   }, [user?.id, tick]);
 
-  function switchOrg(orgId: string) {
-    const mem = memberships.find((m) => m.org_id === orgId);
+  const switchOrg = useCallback((targetOrgId: string) => {
+    const mem = memberships.find((m) => m.org_id === targetOrgId);
     if (mem) {
       setOrg(mem.organization);
       setRole(mem.role);
-      localStorage.setItem("cody-active-org", orgId);
+      localStorage.setItem("cody-active-org", targetOrgId);
       window.location.reload();
     }
-  }
+  }, [memberships]);
+
+  const refresh = useCallback(() => setTick((t) => t + 1), []);
 
   const orgId = org?.id ?? null;
 
-  return (
-    <OrgContext.Provider value={{ org, orgId, memberships, role, loading, switchOrg, refresh: () => setTick((t) => t + 1) }}>
-      {children}
-    </OrgContext.Provider>
+  // Memoize the value so consumers don't see a new ref on unrelated re-renders.
+  const value = useMemo(
+    () => ({ org, orgId, memberships, role, loading, switchOrg, refresh }),
+    [org, orgId, memberships, role, loading, switchOrg, refresh],
   );
+
+  return <OrgContext.Provider value={value}>{children}</OrgContext.Provider>;
 }
 
 export function useOrg() {

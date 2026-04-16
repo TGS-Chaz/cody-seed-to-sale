@@ -1,4 +1,4 @@
-import { useState, useCallback, ReactNode } from "react";
+import { useState, useCallback, useMemo, ReactNode } from "react";
 import { CodyContextContext } from "@/hooks/useCodyContext";
 
 export default function CodyContextProvider({ children }: { children: ReactNode }) {
@@ -21,9 +21,14 @@ export default function CodyContextProvider({ children }: { children: ReactNode 
     setPageData(null);
   }, []);
 
-  return (
-    <CodyContextContext.Provider value={{ context_type, context_id, page_data, setContext, clearContext }}>
-      {children}
-    </CodyContextContext.Provider>
+  // Memoize value so the reference is stable when state hasn't changed.
+  // Consumers that destructure { setContext, clearContext } already get stable
+  // refs via useCallback, but any consumer that passes the whole ctx object
+  // into a dep array needs this memo to avoid triggering infinite effects.
+  const value = useMemo(
+    () => ({ context_type, context_id, page_data, setContext, clearContext }),
+    [context_type, context_id, page_data, setContext, clearContext],
   );
+
+  return <CodyContextContext.Provider value={value}>{children}</CodyContextContext.Provider>;
 }

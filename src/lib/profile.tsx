@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./auth";
 
@@ -36,8 +36,11 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       .then(({ data }) => { setProfile(data ?? null); setLoading(false); });
   }, [user?.id, tick]);
 
+  const refresh = useCallback(() => setTick((t) => t + 1), []);
+  const value = useMemo(() => ({ profile, loading, refresh }), [profile, loading, refresh]);
+
   return (
-    <ProfileContext.Provider value={{ profile, loading, refresh: () => setTick(t => t + 1) }}>
+    <ProfileContext.Provider value={value}>
       {children}
     </ProfileContext.Provider>
   );

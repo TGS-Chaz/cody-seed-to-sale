@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext, ReactNode, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, createContext, useContext, ReactNode, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Keyboard } from "lucide-react";
 
@@ -26,6 +26,8 @@ export function ShortcutsProvider({ children }: { children: ReactNode }) {
     return () => setRegistered((prev) => prev.filter((s) => s !== shortcut));
   }, []);
 
+  const show = useCallback(() => setOpen(true), []);
+
   // Listen for ? key to open modal
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -52,8 +54,17 @@ export function ShortcutsProvider({ children }: { children: ReactNode }) {
     return map;
   }, [registered]);
 
+  // CRITICAL: memoize the context value so its reference is stable across renders
+  // when only unrelated local state (like `open`) changes.
+  // Without this, every re-render creates a new object, which breaks consumers
+  // that depend on `ctx` as an effect dep — causing infinite register/unregister loops.
+  const ctxValue = useMemo<ShortcutsContextValue>(
+    () => ({ register, all: registered, show }),
+    [register, registered, show],
+  );
+
   return (
-    <ShortcutsContext.Provider value={{ register, all: registered, show: () => setOpen(true) }}>
+    <ShortcutsContext.Provider value={ctxValue}>
       {children}
       <AnimatePresence>
         {open && (
@@ -117,6 +128,15 @@ export function ShortcutsProvider({ children }: { children: ReactNode }) {
 /**
  * Register a keyboard shortcut. Handler runs when the key combination fires.
  * Does NOT run while user is typing in an input/textarea.
+ *
+ * CRITICAL DESIGN: We depend only on the stable `register` function ref,
+ * NOT on the entire context object. If we depended on `ctx`, every Provider
+ * re-render (triggered by setRegistered) would change the ctx object reference,
+ * causing this effect to re-run, causing another register/unregister cycle —
+ * an infinite loop.
+ *
+ * We also stash `handler` in a ref so changing the handler closure doesn't
+ * re-attach the keyboard listener on every render.
  */
 export function useShortcut(
   keys: string[],
@@ -124,22 +144,32 @@ export function useShortcut(
   options: { description?: string; scope?: string; enabled?: boolean } = {},
 ) {
   const ctx = useContext(ShortcutsContext);
+  const register = ctx?.register; // stable useCallback — safe to use as dep
   const { description, scope, enabled = true } = options;
 
-  // Register for the cheat sheet
+  // Keep the latest handler in a ref so the listener effect can call it
+  // without being re-subscribed on every render.
+  const handlerRef = useRef(handler);
   useEffect(() => {
-    if (!ctx || !description || !enabled) return;
-    return ctx.register({ keys, description, scope });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx, description, scope, keys.join("+"), enabled]);
+    handlerRef.current = handler;
+  });
 
-  // Listen
+  const keysKey = keys.join("+");
+
+  // Register for the cheat sheet — depends only on primitives + stable register ref
+  useEffect(() => {
+    if (!register || !description || !enabled) return;
+    const unregister = register({ keys, description, scope });
+    return unregister;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [register, description, scope, keysKey, enabled]);
+
+  // Listen for keypresses — attach once per (keys, enabled) change
   useEffect(() => {
     if (!enabled) return;
     const listener = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
       const isEditable = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable;
-      // Allow Escape + ⌘/Ctrl combos inside inputs
       const isCombo = e.metaKey || e.ctrlKey;
       if (isEditable && !isCombo && e.key !== "Escape") return;
 
@@ -153,12 +183,13 @@ export function useShortcut(
       const target_ = keys.map((k) => k.toLowerCase()).join("+");
       if (lower === target_) {
         e.preventDefault();
-        handler(e);
+        handlerRef.current(e);
       }
     };
     window.addEventListener("keydown", listener);
     return () => window.removeEventListener("keydown", listener);
-  }, [keys, handler, enabled]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keysKey, enabled]);
 }
 
 export function useShortcutsContext() {
