@@ -57,6 +57,12 @@ import OrderDetailPage from "@/pages/sales/OrderDetailPage";
 import ManifestsPage from "@/pages/sales/ManifestsPage";
 import ManifestDetailPage from "@/pages/sales/ManifestDetailPage";
 import TransfersPage from "@/pages/sales/TransfersPage";
+import CCRSDashboardPage from "@/pages/compliance/CCRSDashboardPage";
+import AuditLogPage from "@/pages/compliance/AuditLogPage";
+import DisposalsPage from "@/pages/compliance/DisposalsPage";
+import LabelsPage from "@/pages/compliance/LabelsPage";
+import TasksPage from "@/pages/operations/TasksPage";
+import GrowLogsPage from "@/pages/operations/GrowLogsPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -127,8 +133,15 @@ export default function App() {
                     <Route path="/sales/fulfillment" element={<PlaceholderPage />} />
 
                     {/* Compliance */}
-                    <Route path="/compliance/ccrs" element={<PlaceholderPage />} />
+                    <Route path="/compliance/ccrs" element={<CCRSDashboardPage />} />
+                    <Route path="/compliance/audit" element={<AuditLogPage />} />
+                    <Route path="/compliance/disposals" element={<DisposalsPage />} />
+                    <Route path="/compliance/labels" element={<LabelsPage />} />
                     <Route path="/compliance/manifests" element={<PlaceholderPage />} />
+
+                    {/* Operations */}
+                    <Route path="/operations/tasks" element={<TasksPage />} />
+                    <Route path="/operations/logs" element={<GrowLogsPage />} />
 
                     {/* Settings */}
                     <Route path="/settings" element={<SettingsHub />} />

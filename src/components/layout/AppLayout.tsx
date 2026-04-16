@@ -17,6 +17,9 @@ import {
   Truck,
   ShieldCheck,
   FileText,
+  ClipboardList,
+  BookOpen,
+  ScrollText,
   Settings,
   LogOut,
   Sun,
@@ -40,6 +43,7 @@ import { Toaster } from "@/components/ui/sonner";
 import AskCody from "@/components/cody/AskCody";
 import CodyContextProvider from "@/components/cody/CodyContextProvider";
 import CommandBar from "@/components/shared/CommandBar";
+import NotificationBell from "@/components/shared/NotificationBell";
 
 const navGroups = [
   { label: "Overview", items: [
@@ -55,12 +59,14 @@ const navGroups = [
     { to: "/cultivation/grow-cycles", icon: CalendarDays, label: "Grow Cycles" },
     { to: "/cultivation/harvests", icon: Scissors, label: "Harvests" },
   ]},
+  { label: "Operations", items: [
+    { to: "/operations/tasks", icon: ClipboardList, label: "Tasks" },
+    { to: "/operations/logs", icon: BookOpen, label: "Grow Logs" },
+  ]},
   { label: "Inventory", items: [
     { to: "/inventory/batches", icon: Barcode, label: "Batches" },
     { to: "/inventory/qa", icon: FlaskConical, label: "QA & Lab Testing" },
     { to: "/inventory/production", icon: Factory, label: "Production" },
-    { to: "/inventory/labels", icon: Tag, label: "Labels" },
-    { to: "/inventory/disposals", icon: Trash2, label: "Disposals" },
   ]},
   { label: "Sales & Fulfillment", items: [
     { to: "/sales/accounts", icon: Building2, label: "Accounts" },
@@ -70,7 +76,9 @@ const navGroups = [
   ]},
   { label: "Compliance", items: [
     { to: "/compliance/ccrs", icon: ShieldCheck, label: "CCRS Dashboard" },
-    { to: "/compliance/manifests", icon: FileText, label: "Manifests" },
+    { to: "/compliance/audit", icon: ScrollText, label: "Audit Log" },
+    { to: "/compliance/disposals", icon: Trash2, label: "Disposals" },
+    { to: "/compliance/labels", icon: Tag, label: "Labels" },
   ]},
   { label: "Settings", items: [
     { to: "/settings", icon: Settings, label: "Configuration" },
@@ -278,7 +286,16 @@ export default function AppLayout() {
             <span style={{ color: "hsl(var(--primary))" }}>c</span>
             <span className="text-foreground">ody</span>
           </div>
+          <div className="ml-auto"><NotificationBell /></div>
         </header>
+
+        {/* Desktop top bar */}
+        <div
+          className="hidden md:flex items-center justify-end px-4 h-10"
+          style={{ borderBottom: '1px solid var(--glass-border-subtle)' }}
+        >
+          <NotificationBell />
+        </div>
 
         <div className="flex-1 overflow-auto pb-20 md:pb-6 dot-grid">
           <AnimatePresence mode="wait">
