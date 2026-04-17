@@ -96,7 +96,12 @@ export default function RecallsPage() {
         <StatCard label="Resolved" value={stats.resolved} accentClass="stat-accent-emerald" delay={0.15} />
       </div>
 
-      <FiltersBar searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search recall #, reason…" />
+      <FiltersBar
+        searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search recall #, reason…"
+        pageKey="recalls"
+        currentFilters={{ search }}
+        onApplyView={(f) => setSearch(f.search ?? "")}
+      />
 
       <DataTable
         columns={columns} data={filtered} loading={loading}

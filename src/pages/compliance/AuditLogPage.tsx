@@ -114,6 +114,12 @@ export default function AuditLogPage() {
       <FiltersBar
         searchValue={search} onSearchChange={setSearch}
         searchPlaceholder="Search user, entity, action…"
+        pageKey="audit_log"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ entity_type: f.entity_type, action: f.action });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.entity_type ?? ""} onChange={(e) => setFilters((f) => ({ ...f, entity_type: e.target.value || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

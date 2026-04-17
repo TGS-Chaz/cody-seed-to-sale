@@ -286,6 +286,9 @@ function MembersTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name or email…"
+        pageKey="users"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => setInviteOpen(true)} className="gap-1.5">
             <Mail className="w-3.5 h-3.5" /> Invite Member

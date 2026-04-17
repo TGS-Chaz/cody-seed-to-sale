@@ -265,6 +265,13 @@ export default function HarvestsPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, strain, cycle…"
+        pageKey="harvests"
+        currentFilters={{ ...filters, dateRange, search: searchValue }}
+        onApplyView={(f) => {
+          setFilters({ status: f.status, strain_id: f.strain_id, cycle_id: f.cycle_id, harvest_type: f.harvest_type });
+          setDateRange(f.dateRange ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.status ?? "active"} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as any }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

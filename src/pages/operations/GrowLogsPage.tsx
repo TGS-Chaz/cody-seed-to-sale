@@ -75,6 +75,12 @@ export default function GrowLogsPage() {
       <FiltersBar
         searchValue={search} onSearchChange={setSearch}
         searchPlaceholder="Search entries…"
+        pageKey="grow_logs"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ log_type: f.log_type, area_id: f.area_id, cycle_id: f.cycle_id });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <select value={filters.log_type ?? ""} onChange={(e) => setFilters((f) => ({ ...f, log_type: e.target.value || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
             <option value="">All types</option>

@@ -273,6 +273,17 @@ function ProductsTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, SKU, description…"
+        pageKey="products"
+        currentFilters={{ categoryFilter, typeFilter, lineFilter, statusFilter, medicalFilter, batchesFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setCategoryFilter(f.categoryFilter ?? "");
+          setTypeFilter(f.typeFilter ?? "");
+          setLineFilter(f.lineFilter ?? "");
+          setStatusFilter(f.statusFilter ?? "");
+          setMedicalFilter(f.medicalFilter ?? "");
+          setBatchesFilter(f.batchesFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
@@ -436,6 +447,9 @@ function LinesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search product lines…"
+        pageKey="product_lines"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => { setEditing(null); setModalOpen(true); }} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" /> Add Product Line

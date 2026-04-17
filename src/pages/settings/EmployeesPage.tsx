@@ -335,6 +335,15 @@ export default function EmployeesPage() {
         searchPlaceholder="Search name, email, or employee #…"
         activeChips={activeChips}
         onClearAll={activeChips.length > 0 ? clearAll : undefined}
+        pageKey="employees"
+        currentFilters={{ deptFilter, statusFilter, facilityFilter, hasSystemFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setDeptFilter(f.deptFilter ?? "");
+          setStatusFilter(f.statusFilter ?? "");
+          setFacilityFilter(f.facilityFilter ?? "");
+          setHasSystemFilter(f.hasSystemFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select

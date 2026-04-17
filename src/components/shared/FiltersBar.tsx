@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import SavedViewsDropdown from "./SavedViewsDropdown";
 
 export interface FilterChip {
   key: string;
@@ -15,9 +16,14 @@ interface FiltersBarProps {
   searchPlaceholder?: string;
   activeChips?: FilterChip[];
   onClearAll?: () => void;
-  /** Right-side slot — usually saved views / columns / export */
+  /** Right-side slot — usually columns / export / etc. The saved-views dropdown is prepended automatically when pageKey is set. */
   actions?: ReactNode;
   className?: string;
+  /** Saved-views integration. When pageKey is provided the dropdown is rendered at the start of `actions`. */
+  pageKey?: string;
+  currentFilters?: Record<string, any>;
+  currentSort?: Record<string, any> | null;
+  onApplyView?: (filters: Record<string, any>, sort: Record<string, any> | null) => void;
 }
 
 export default function FiltersBar({
@@ -28,7 +34,20 @@ export default function FiltersBar({
   onClearAll,
   actions,
   className,
+  pageKey,
+  currentFilters,
+  currentSort,
+  onApplyView,
 }: FiltersBarProps) {
+  const savedViews = pageKey && onApplyView && currentFilters ? (
+    <SavedViewsDropdown
+      pageKey={pageKey}
+      currentFilters={currentFilters}
+      currentSort={currentSort ?? null}
+      onApplyView={onApplyView}
+    />
+  ) : null;
+
   return (
     <div className={cn("flex flex-col gap-2 mb-4", className)}>
       <div className="flex flex-wrap items-center gap-2">
@@ -47,6 +66,7 @@ export default function FiltersBar({
         )}
         <div className="flex items-center gap-2 ml-auto">
           {actions}
+          {savedViews}
         </div>
       </div>
       {activeChips.length > 0 && (

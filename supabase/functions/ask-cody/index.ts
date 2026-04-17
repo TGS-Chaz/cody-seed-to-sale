@@ -32,12 +32,57 @@ interface AskCodyRequest {
   page_data?: unknown;
   user_message: string;
   conversation_id?: string;
+  intent?: "chat" | "extract_coa";
+  /** For intent=extract_coa — base64-encoded file content + mime type */
+  attachment?: { base64: string; mime_type: "application/pdf" | "image/jpeg" | "image/png" | "image/webp"; filename?: string };
 }
 
 interface AnthropicMessage {
   role: "user" | "assistant";
-  content: string;
+  content: string | Array<{ type: string; [key: string]: unknown }>;
 }
+
+const COA_EXTRACTION_PROMPT = `You are a cannabis Certificate of Analysis (COA) data extractor. You will be given a lab-test document (PDF or image) and must extract structured JSON matching WSLCB CCRS QA Results schema.
+
+RETURN EXACTLY THIS JSON SHAPE — no prose, no code fences, no commentary:
+{
+  "lab_name": string | null,
+  "lab_license_number": string | null,
+  "lab_sample_id": string | null,
+  "test_date": "YYYY-MM-DD" | null,
+  "report_date": "YYYY-MM-DD" | null,
+  "batch_barcode": string | null,
+  "tested_external_id": string | null,
+  "product_name": string | null,
+  "potency": {
+    "thca_pct": number | null,
+    "thc_pct": number | null,
+    "total_thc_pct": number | null,
+    "cbda_pct": number | null,
+    "cbd_pct": number | null,
+    "total_cbd_pct": number | null,
+    "total_cannabinoids_pct": number | null,
+    "total_terpenes_pct": number | null
+  },
+  "pesticides_pass": boolean | null,
+  "heavy_metals_pass": boolean | null,
+  "microbials_pass": boolean | null,
+  "mycotoxins_pass": boolean | null,
+  "residual_solvents_pass": boolean | null,
+  "water_activity_pass": boolean | null,
+  "moisture_content_pass": boolean | null,
+  "moisture_content_pct": number | null,
+  "water_activity": number | null,
+  "overall_result": "Pass" | "Fail" | "FailExtractableOnly" | "FailRetestAllowed" | null,
+  "notes": string | null,
+  "confidence": "high" | "medium" | "low"
+}
+
+Rules:
+- Percentages are numbers (e.g. 22.4 not "22.4%")
+- Use null for fields you cannot find — do not guess
+- confidence="high" if all major fields found, "medium" if most, "low" if the document is hard to read
+- Do not add any fields not listed above`;
 
 async function callAnthropic(
   system: string,
@@ -87,10 +132,10 @@ serve(async (req) => {
   try {
     // req.json() can only be called once per request
     const body: AskCodyRequest = await req.json();
-    const { product, context_type, context_id, page_data, user_message } = body;
+    const { product, context_type, context_id, page_data, user_message, intent, attachment } = body;
     let conversation_id = body.conversation_id;
 
-    if (!product || !user_message) {
+    if (intent !== "extract_coa" && (!product || !user_message)) {
       return new Response(
         JSON.stringify({ error: "product and user_message are required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -118,6 +163,37 @@ serve(async (req) => {
       });
     }
     const userId = userData.user.id;
+
+    // COA extraction: authenticated but skips the conversation flow — structured JSON reply.
+    if (intent === "extract_coa") {
+      if (!attachment?.base64 || !attachment.mime_type) {
+        return new Response(JSON.stringify({ error: "extract_coa requires attachment { base64, mime_type }" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const contentBlocks: Array<any> = [];
+      if (attachment.mime_type === "application/pdf") {
+        contentBlocks.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: attachment.base64 } });
+      } else {
+        contentBlocks.push({ type: "image", source: { type: "base64", media_type: attachment.mime_type, data: attachment.base64 } });
+      }
+      contentBlocks.push({ type: "text", text: "Extract the COA fields from the attached document." });
+      const { content: jsonText, tokens, model } = await callAnthropic(COA_EXTRACTION_PROMPT, [
+        { role: "user", content: contentBlocks },
+      ]);
+      let parsed: unknown = null;
+      try {
+        const cleaned = jsonText.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
+        parsed = JSON.parse(cleaned);
+      } catch (_err) {
+        return new Response(JSON.stringify({ error: "Model did not return valid JSON", raw: jsonText }), {
+          status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ extraction: parsed, tokens_used: tokens, model }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Resolve org_id (first membership; matches client's localStorage default)
     const { data: members } = await supabaseAdmin

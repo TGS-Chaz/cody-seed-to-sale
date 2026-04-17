@@ -270,6 +270,14 @@ export default function SourcesPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search batch, strain, vendor, notes…"
+        pageKey="sources"
+        currentFilters={{ typeFilter, strainFilter, statusFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setStrainFilter(f.strainFilter ?? "");
+          setStatusFilter(f.statusFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

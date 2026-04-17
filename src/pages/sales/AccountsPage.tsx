@@ -149,6 +149,12 @@ export default function AccountsPage() {
         searchValue={search}
         onSearchChange={setSearch}
         searchPlaceholder="Search company, license, contact, city…"
+        pageKey="accounts"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ status_id: f.status_id, route_id: f.route_id, license_type: f.license_type, is_active: f.is_active });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.status_id ?? ""} onChange={(e) => setFilters((f) => ({ ...f, status_id: e.target.value || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border" disabled={statuses.length === 0}>

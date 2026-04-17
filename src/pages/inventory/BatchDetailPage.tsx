@@ -29,6 +29,9 @@ import {
 } from "@/hooks/useBatches";
 import { CCRS_INVENTORY_CATEGORY_LABELS, CCRS_INVENTORY_CATEGORY_COLORS, CcrsInventoryCategory, STRAIN_TYPE_COLORS, StrainType } from "@/lib/schema-enums";
 import { SublotModal, AdjustInventoryModal, ReturnToParentModal } from "./BatchModals";
+import { AddResultsModal } from "./QAModals";
+import COAExtractor, { COAExtraction } from "@/components/ai/COAExtractor";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ModalKey = "sublot" | "adjust" | "return" | null;
@@ -449,6 +452,9 @@ function QAPanel({ batch, results, loading }: { batch: Batch; results: any[]; lo
   const navigate = useNavigate();
   const inherited = batch.qa_parent_batch_id && batch.qa_parent_batch_id !== batch.id;
   const latest = results[0];
+  const [coaOpen, setCoaOpen] = useState(false);
+  const [addResultsOpen, setAddResultsOpen] = useState(false);
+  const [prefill, setPrefill] = useState<COAExtraction | null>(null);
 
   const columns: ColumnDef<any>[] = useMemo(() => [
     { accessorKey: "test_name", header: "Test", cell: ({ row }) => <span className="text-[12px] font-medium">{row.original.test_name ?? row.original.lot?.lot_number ?? "—"}</span> },
@@ -497,10 +503,26 @@ function QAPanel({ batch, results, loading }: { batch: Batch; results: any[]; lo
       <div>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[13px] font-semibold">Test results</h3>
-          <Button size="sm" variant="outline" disabled className="gap-1.5">
-            <Plus className="w-3.5 h-3.5" /> Submit for Testing (soon)
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => setCoaOpen(true)} className="gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" /> Extract from COA
+            </Button>
+            <Button size="sm" variant="outline" disabled className="gap-1.5">
+              <Plus className="w-3.5 h-3.5" /> Submit for Testing (soon)
+            </Button>
+          </div>
         </div>
+        <COAExtractor
+          open={coaOpen}
+          onClose={() => setCoaOpen(false)}
+          onExtracted={(data) => { setPrefill(data); setAddResultsOpen(true); }}
+        />
+        <AddResultsModal
+          open={addResultsOpen}
+          onClose={() => { setAddResultsOpen(false); setPrefill(null); }}
+          prefill={prefill}
+        />
+
         <DataTable
           columns={columns}
           data={results}

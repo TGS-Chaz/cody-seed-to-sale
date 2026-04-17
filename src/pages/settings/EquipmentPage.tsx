@@ -314,6 +314,15 @@ function DevicesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, serial, manufacturer, model…"
+        pageKey="equipment"
+        currentFilters={{ typeFilter, statusFilter, integrationFilter, calFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setStatusFilter(f.statusFilter ?? "");
+          setIntegrationFilter(f.integrationFilter ?? "");
+          setCalFilter(f.calFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as EquipmentType | "")} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
@@ -575,6 +584,14 @@ function CalibrationTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search equipment, technician, notes…"
+        pageKey="calibrations"
+        currentFilters={{ typeFilter, resultFilter, periodFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setResultFilter(f.resultFilter ?? "");
+          setPeriodFilter(f.periodFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as EquipmentType | "")} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

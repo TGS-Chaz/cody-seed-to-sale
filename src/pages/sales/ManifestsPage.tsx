@@ -143,6 +143,12 @@ export default function ManifestsPage() {
       <FiltersBar
         searchValue={search} onSearchChange={setSearch}
         searchPlaceholder="Search manifest ID, destination, order…"
+        pageKey="manifests"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ status: f.status, type: f.type });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.status ?? ""} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as ManifestStatus || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

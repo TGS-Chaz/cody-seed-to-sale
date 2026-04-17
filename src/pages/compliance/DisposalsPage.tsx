@@ -106,7 +106,12 @@ export default function DisposalsPage() {
         <StatCard label="Total Weight" value={`${(stats.totalWeight / 1000).toFixed(1)}kg`} accentClass="stat-accent-blue" delay={0.15} />
       </div>
 
-      <FiltersBar searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search ID, reason, batch…" />
+      <FiltersBar
+        searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search ID, reason, batch…"
+        pageKey="disposals"
+        currentFilters={{ search }}
+        onApplyView={(f) => setSearch(f.search ?? "")}
+      />
 
       <DataTable
         columns={columns} data={filtered} loading={loading}

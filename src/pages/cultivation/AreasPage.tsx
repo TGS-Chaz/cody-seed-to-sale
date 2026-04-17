@@ -278,6 +278,16 @@ export default function AreasPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, description…"
+        pageKey="areas"
+        currentFilters={{ facilityFilter, typeFilter, licensedFilter, sensorFilter, occupancyFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setFacilityFilter(f.facilityFilter ?? "");
+          setTypeFilter(f.typeFilter ?? "");
+          setLicensedFilter(f.licensedFilter ?? "");
+          setSensorFilter(f.sensorFilter ?? "");
+          setOccupancyFilter(f.occupancyFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={facilityFilter} onChange={(e) => setFacilityFilter(e.target.value)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border" disabled={facilities.length === 0}>

@@ -41,6 +41,21 @@ export function useNotifications(limit: number = 20) {
   }, [user?.id, orgId, tick, limit]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  // Realtime: push-refresh when this user's notifications change
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel(`notifications:${user.id}`)
+      .on(
+        "postgres_changes" as any,
+        { event: "*", schema: "public", table: "grow_in_app_notifications", filter: `user_id=eq.${user.id}` },
+        () => setTick((t) => t + 1),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
+
   return { data, loading, refresh };
 }
 
@@ -62,6 +77,21 @@ export function useUnreadCount() {
   }, [user?.id, tick]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  // Realtime: bump tick when this user's notifications change
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel(`notifications-count:${user.id}`)
+      .on(
+        "postgres_changes" as any,
+        { event: "*", schema: "public", table: "grow_in_app_notifications", filter: `user_id=eq.${user.id}` },
+        () => setTick((t) => t + 1),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
+
   return { count, refresh };
 }
 

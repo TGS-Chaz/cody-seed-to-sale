@@ -234,6 +234,9 @@ export default function FacilitiesPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, license #, or city…"
+        pageKey="facilities"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button variant="outline" size="sm" className="gap-1.5" disabled>
             <Download className="w-3.5 h-3.5" /> Export

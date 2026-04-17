@@ -90,7 +90,12 @@ export default function SuppliesPage() {
         <StatCard label="Total Value" value={`$${stats.totalValue.toFixed(2)}`} accentClass="stat-accent-teal" delay={0.1} />
       </div>
 
-      <FiltersBar searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search name, SKU, barcode…" />
+      <FiltersBar
+        searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search name, SKU, barcode…"
+        pageKey="supplies"
+        currentFilters={{ search }}
+        onApplyView={(f) => setSearch(f.search ?? "")}
+      />
 
       <DataTable
         columns={columns} data={filtered} loading={loading}

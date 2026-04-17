@@ -152,6 +152,12 @@ export default function ReportsPage() {
           <FiltersBar
             searchValue={search} onSearchChange={setSearch}
             searchPlaceholder="Search reports…"
+            pageKey="reports_prebuilt"
+            currentFilters={{ categoryFilter, search }}
+            onApplyView={(f) => {
+              setCategoryFilter(f.categoryFilter ?? "");
+              setSearch(f.search ?? "");
+            }}
             actions={
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
                 <option value="">All categories</option>
@@ -184,7 +190,12 @@ export default function ReportsPage() {
         </TabsContent>
 
         <TabsContent value="custom">
-          <FiltersBar searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search my reports…" />
+          <FiltersBar
+            searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search my reports…"
+            pageKey="reports_custom"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
+          />
           {filteredCustom.length === 0 ? (
             <EmptyState icon={FileText} title="No custom reports yet" description="Build a report from any data source with filters, grouping, and charts." action={<Button onClick={() => setCreateOpen(true)} className="gap-1.5"><Plus className="w-3.5 h-3.5" /> Create Custom Report</Button>} />
           ) : (

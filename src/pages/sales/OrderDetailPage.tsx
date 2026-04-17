@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ShoppingCart, Loader2, Send, Package, Truck, CheckCircle2, XCircle, Activity, MoreHorizontal,
-  Plus, Trash2, Building2, DollarSign, FileText, Edit, ArrowRight,
+  Plus, Trash2, Building2, DollarSign, FileText, Edit, ArrowRight, Printer, Receipt,
 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { toast } from "sonner";
@@ -25,6 +25,8 @@ import {
   Order, OrderItem, OrderAllocation, PackToOrderSuggestion,
 } from "@/hooks/useOrders";
 import { PackagingModal } from "@/pages/inventory/PackagingModal";
+import { generatePicklist, openPicklistWindow } from "@/lib/documents/generatePicklist";
+import { useGenerateInvoice, useMarkInvoicePaid } from "@/hooks/useInvoices";
 import type { Batch } from "@/hooks/useBatches";
 import { ORDER_SALE_TYPE_LABELS, OrderSaleType } from "@/lib/schema-enums";
 import { AddOrderItemModal } from "./OrderModals";
@@ -136,6 +138,16 @@ export default function OrderDetailPage() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild><Button variant="outline" size="icon" className="w-9 h-9"><MoreHorizontal className="w-4 h-4" /></Button></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {allocations.length > 0 && ["allocated", "packaged", "manifested", "released", "completed", "invoiced"].includes(order.status ?? "") && (
+                  <DropdownMenuItem onClick={async () => {
+                    try {
+                      const html = await generatePicklist(order.id);
+                      openPicklistWindow(html);
+                    } catch (err: any) { toast.error(err?.message ?? "Failed to generate picklist"); }
+                  }}>
+                    <Printer className="w-3.5 h-3.5" /> Generate Picklist
+                  </DropdownMenuItem>
+                )}
                 {allocations.length > 0 && (
                   <DropdownMenuItem onClick={async () => { try { await deallocate(order.id); toast.success("Deallocated"); refresh(); refreshAllocs(); } catch (err: any) { toast.error(err?.message ?? "Failed"); } }}>
                     <XCircle className="w-3.5 h-3.5" /> Deallocate
@@ -211,6 +223,7 @@ export default function OrderDetailPage() {
           <TabsTrigger value="items">Items ({items.length})</TabsTrigger>
           <TabsTrigger value="allocations">Allocations ({allocations.length})</TabsTrigger>
           <TabsTrigger value="manifest">Manifest</TabsTrigger>
+          <TabsTrigger value="invoice">Invoice</TabsTrigger>
           <TabsTrigger value="financials">Financials</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
@@ -240,6 +253,9 @@ export default function OrderDetailPage() {
         </TabsContent>
         <TabsContent value="manifest">
           <ManifestPanel orderId={order.id} canCreate={order.status === "allocated"} />
+        </TabsContent>
+        <TabsContent value="invoice">
+          <InvoicePanel orderId={order.id} canGenerate={["allocated", "packaged", "manifested", "released", "completed", "invoiced"].includes(order.status ?? "")} />
         </TabsContent>
         <TabsContent value="financials">
           <FinancialsPanel order={order} items={items} allocations={allocations} />
@@ -507,3 +523,107 @@ function Stat({ label, value, className }: { label: string; value: React.ReactNo
 }
 
 void Edit;
+
+function InvoicePanel({ orderId, canGenerate }: { orderId: string; canGenerate: boolean }) {
+  const [tick, setTick] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [invoice, setInvoice] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      const { data } = await supabase.from("grow_invoices").select("*").eq("order_id", orderId).maybeSingle();
+      if (cancelled) return;
+      setInvoice(data ?? null);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [orderId, tick]);
+
+  const generate = useGenerateInvoice();
+  const markPaid = useMarkInvoicePaid();
+
+  const handleGenerate = async () => {
+    setSaving(true);
+    try {
+      const inv = await generate(orderId);
+      toast.success(`Invoice ${inv.invoice_number} generated`);
+      setTick((t) => t + 1);
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+    finally { setSaving(false); }
+  };
+
+  const handlePrint = async () => {
+    if (!invoice) return;
+    try {
+      const { generateInvoice, openInvoiceWindow } = await import("@/lib/documents/generateInvoice");
+      const html = await generateInvoice(invoice.id);
+      openInvoiceWindow(html);
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+  };
+
+  const handleMarkPaid = async () => {
+    if (!invoice) return;
+    setSaving(true);
+    try {
+      await markPaid(invoice.id);
+      toast.success("Marked paid");
+      setTick((t) => t + 1);
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+    finally { setSaving(false); }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>;
+
+  if (!invoice) {
+    return (
+      <div className="rounded-xl border border-border bg-card p-12 text-center">
+        <Receipt className="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
+        <p className="text-[14px] font-semibold mb-1">No invoice yet</p>
+        <p className="text-[12px] text-muted-foreground mb-4">
+          {canGenerate
+            ? "Generate an invoice from this order's totals. Payment tracking begins after generation."
+            : "Allocate this order before generating an invoice."}
+        </p>
+        <Button onClick={handleGenerate} disabled={!canGenerate || saving} className="gap-1.5">
+          {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Receipt className="w-3.5 h-3.5" />}
+          Generate Invoice
+        </Button>
+      </div>
+    );
+  }
+
+  const statusColor = invoice.status === "paid" ? "success" : invoice.status === "overdue" ? "critical" : invoice.status === "partial" ? "warning" : "info";
+  const overdue = invoice.due_date && new Date(invoice.due_date).getTime() < Date.now() && invoice.status !== "paid";
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-border bg-card p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-[14px] font-semibold">{invoice.invoice_number}</h3>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Dated <DateTime value={invoice.invoice_date} format="date-only" />
+              {invoice.due_date && <> · due <span className={overdue ? "text-destructive font-medium" : ""}><DateTime value={invoice.due_date} format="date-only" /></span></>}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <StatusPill label={invoice.status ?? "unpaid"} variant={statusColor} />
+            <Button size="sm" variant="outline" onClick={handlePrint} className="gap-1.5"><Printer className="w-3.5 h-3.5" /> Print / PDF</Button>
+            {invoice.status !== "paid" && (
+              <Button size="sm" onClick={handleMarkPaid} disabled={saving} className="gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Mark Paid</Button>
+            )}
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Stat label="Subtotal" value={`$${Number(invoice.subtotal ?? 0).toFixed(2)}`} />
+          <Stat label="Tax" value={`$${Number(invoice.tax_total ?? 0).toFixed(2)}`} />
+          <Stat label="Total" value={`$${Number(invoice.total ?? 0).toFixed(2)}`} />
+          <Stat label="Balance" value={`$${Number(invoice.balance ?? 0).toFixed(2)}`} className={Number(invoice.balance) > 0 ? "text-destructive" : "text-emerald-500"} />
+        </div>
+      </div>
+    </div>
+  );
+}

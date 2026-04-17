@@ -383,6 +383,17 @@ export default function PlantsPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search plant ID, strain, area, external ID…"
+        pageKey="plants"
+        currentFilters={{ ...filters, ageBucket, search: searchValue }}
+        onApplyView={(f) => {
+          setFilters({
+            strain_id: f.strain_id, area_id: f.area_id, cycle_id: f.cycle_id,
+            growth_stage: f.growth_stage, plant_state: f.plant_state,
+            source_type: f.source_type, is_mother: f.is_mother,
+          });
+          setAgeBucket((f.ageBucket ?? "") as AgeBucket);
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.growth_stage ?? ""} onChange={(e) => setFilters((f) => ({ ...f, growth_stage: (e.target.value || undefined) as CcrsGrowthStage | undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

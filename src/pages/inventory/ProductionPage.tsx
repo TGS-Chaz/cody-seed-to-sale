@@ -224,6 +224,9 @@ export default function ProductionPage() {
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder="Search run, BOM, output product…"
+            pageKey="production_runs"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
           />
           <DataTable
             columns={runColumns}
@@ -253,6 +256,9 @@ export default function ProductionPage() {
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder="Search BOM name, output product…"
+            pageKey="boms"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
           />
           <DataTable
             columns={bomColumns}

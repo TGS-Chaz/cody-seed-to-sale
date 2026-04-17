@@ -25,6 +25,7 @@ import { useNoteAttributes } from "@/hooks/useNoteAttributes";
 import { AccountModal } from "./AccountModal";
 import AccountCreditPanel from "./AccountCreditPanel";
 import AccountAIInsights from "@/components/ai/AccountAIInsights";
+import { useInvoices, useInvoiceStats, useMarkInvoicePaid } from "@/hooks/useInvoices";
 import { cn } from "@/lib/utils";
 
 export default function AccountDetailPage() {
@@ -162,6 +163,7 @@ export default function AccountDetailPage() {
           <TabsTrigger value="contacts">Contacts</TabsTrigger>
           <TabsTrigger value="pricing">Pricing ({priceLists.length})</TabsTrigger>
           <TabsTrigger value="credit">Credit</TabsTrigger>
+          <TabsTrigger value="financials">Financials</TabsTrigger>
           <TabsTrigger value="fleet">Fleet</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
         </TabsList>
@@ -179,6 +181,7 @@ export default function AccountDetailPage() {
         <TabsContent value="contacts"><ContactsPanel account={account} /></TabsContent>
         <TabsContent value="pricing"><PricingPanel priceLists={priceLists} /></TabsContent>
         <TabsContent value="credit"><AccountCreditPanel accountId={account.id} /></TabsContent>
+        <TabsContent value="financials"><FinancialsPanel accountId={account.id} /></TabsContent>
         <TabsContent value="fleet"><FleetPanel drivers={drivers} vehicles={vehicles} /></TabsContent>
         <TabsContent value="activity">
           <div className="rounded-xl border border-border bg-card p-12 text-center">
@@ -495,3 +498,116 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 void Users;
+
+function FinancialsPanel({ accountId }: { accountId: string }) {
+  const { data: invoices, loading, refresh } = useInvoices({ account_id: accountId });
+  const stats = useInvoiceStats(invoices);
+  const markPaid = useMarkInvoicePaid();
+
+  const handlePrint = async (invoiceId: string) => {
+    try {
+      const { generateInvoice, openInvoiceWindow } = await import("@/lib/documents/generateInvoice");
+      const html = await generateInvoice(invoiceId);
+      openInvoiceWindow(html);
+    } catch (err: any) { toast.error(err?.message ?? "Failed"); }
+  };
+
+  const handleMarkPaid = async (invoiceId: string) => {
+    try { await markPaid(invoiceId); toast.success("Marked paid"); refresh(); }
+    catch (err: any) { toast.error(err?.message ?? "Failed"); }
+  };
+
+  if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Stat label="Invoices" value={stats.total} />
+        <Stat label="Outstanding" value={`$${stats.outstandingAmount.toFixed(2)}`} />
+        <Stat label="Overdue" value={`$${stats.overdueAmount.toFixed(2)}`} />
+        <Stat label="Paid" value={`$${stats.paidAmount.toFixed(2)}`} />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">Aging breakdown</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="rounded-lg bg-muted/20 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-emerald-500 mb-1 font-semibold">Current</div>
+            <div className="text-[15px] font-bold font-mono tabular-nums">${stats.aging.current.toFixed(2)}</div>
+          </div>
+          <div className="rounded-lg bg-muted/20 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-blue-500 mb-1 font-semibold">1–30d</div>
+            <div className="text-[15px] font-bold font-mono tabular-nums">${stats.aging.days_30.toFixed(2)}</div>
+          </div>
+          <div className="rounded-lg bg-muted/20 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-amber-500 mb-1 font-semibold">31–60d</div>
+            <div className="text-[15px] font-bold font-mono tabular-nums">${stats.aging.days_60.toFixed(2)}</div>
+          </div>
+          <div className="rounded-lg bg-muted/20 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-orange-500 mb-1 font-semibold">61–90d</div>
+            <div className="text-[15px] font-bold font-mono tabular-nums">${stats.aging.days_90.toFixed(2)}</div>
+          </div>
+          <div className="rounded-lg bg-muted/20 p-3">
+            <div className="text-[10px] uppercase tracking-wider text-destructive mb-1 font-semibold">90+</div>
+            <div className="text-[15px] font-bold font-mono tabular-nums">${stats.aging.days_90_plus.toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card overflow-hidden">
+        <div className="px-5 py-3 border-b border-border">
+          <h3 className="text-[13px] font-semibold">Invoices</h3>
+        </div>
+        {invoices.length === 0 ? (
+          <div className="py-12 text-center">
+            <FileText className="w-8 h-8 mx-auto text-muted-foreground/40 mb-3" />
+            <p className="text-[12px] text-muted-foreground">No invoices for this account yet.</p>
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="bg-muted/30">
+              <tr className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                <th className="text-left px-5 py-2 font-medium">Invoice #</th>
+                <th className="text-left px-3 py-2 font-medium">Date</th>
+                <th className="text-left px-3 py-2 font-medium">Due</th>
+                <th className="text-left px-3 py-2 font-medium">Order</th>
+                <th className="text-right px-3 py-2 font-medium">Total</th>
+                <th className="text-right px-3 py-2 font-medium">Balance</th>
+                <th className="text-center px-3 py-2 font-medium">Status</th>
+                <th className="px-5 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {invoices.map((inv) => {
+                const due = inv.due_date ? new Date(inv.due_date).getTime() : null;
+                const overdue = due && due < Date.now() && inv.status !== "paid";
+                const variant: any = inv.status === "paid" ? "success" : overdue ? "critical" : inv.status === "partial" ? "warning" : "info";
+                return (
+                  <tr key={inv.id} className="border-b border-border text-[12px]">
+                    <td className="px-5 py-3 font-mono">{inv.invoice_number}</td>
+                    <td className="px-3 py-3"><DateTime value={inv.invoice_date} format="date-only" /></td>
+                    <td className={cn("px-3 py-3", overdue ? "text-destructive font-medium" : "")}>
+                      {inv.due_date ? <DateTime value={inv.due_date} format="date-only" /> : "—"}
+                    </td>
+                    <td className="px-3 py-3">{inv.order?.order_number ?? "—"}</td>
+                    <td className="px-3 py-3 text-right font-mono">${Number(inv.total).toFixed(2)}</td>
+                    <td className={cn("px-3 py-3 text-right font-mono font-semibold", Number(inv.balance) > 0 ? "text-destructive" : "text-emerald-500")}>${Number(inv.balance).toFixed(2)}</td>
+                    <td className="px-3 py-3 text-center"><StatusPill label={overdue ? "overdue" : inv.status ?? "unpaid"} variant={variant} /></td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button size="sm" variant="ghost" onClick={() => handlePrint(inv.id)} className="h-7 px-2 text-[11px]">Print</Button>
+                        {inv.status !== "paid" && (
+                          <Button size="sm" variant="outline" onClick={() => handleMarkPaid(inv.id)} className="h-7 px-2 text-[11px]">Mark Paid</Button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}

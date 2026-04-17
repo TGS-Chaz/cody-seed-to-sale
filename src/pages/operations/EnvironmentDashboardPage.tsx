@@ -62,6 +62,22 @@ export default function EnvironmentDashboardPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<MetricView>("temperature");
+  const [tick, setTick] = useState(0);
+
+  // Realtime: readings + alerts both invalidate the dashboard
+  useEffect(() => {
+    if (!orgId) return;
+    const channel = supabase
+      .channel(`environment:${orgId}`)
+      .on("postgres_changes" as any,
+        { event: "*", schema: "public", table: "grow_environmental_alerts", filter: `org_id=eq.${orgId}` },
+        () => setTick((t) => t + 1))
+      .on("postgres_changes" as any,
+        { event: "INSERT", schema: "public", table: "grow_environmental_readings" },
+        () => setTick((t) => t + 1))
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [orgId]);
 
   useEffect(() => {
     if (!user || !orgId) { setLoading(false); return; }
@@ -125,7 +141,7 @@ export default function EnvironmentDashboardPage() {
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, [user?.id, orgId]);
+  }, [user?.id, orgId, tick]);
 
   const { setContext, clearContext } = useCodyContext();
   useEffect(() => {

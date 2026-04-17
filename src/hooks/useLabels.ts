@@ -144,7 +144,9 @@ export function useGenerateLabel() {
       strain_name: (strainRes as any).data?.name ?? null,
       harvest_date: (harvestRes as any).data?.harvest_started_at ?? null,
       warning_text: config.warning_text ?? "For use only by adults 21 and older. Keep out of the reach of children.",
-      qr_url: config.include_qr_code ? `https://cody.grow/batch/${batch.id}` : undefined,
+      qr_url: config.include_qr_code
+        ? `${window.location.origin}/public/trace/${batch.external_id ?? batch.id}`
+        : undefined,
     };
     return { template, data };
   }, [orgId]);

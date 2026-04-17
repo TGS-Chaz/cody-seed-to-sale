@@ -268,8 +268,21 @@ export function CreateSampleModal({ open, onClose, onSuccess, initialLotId }: {
 
 // ─── Add Results ────────────────────────────────────────────────────────────
 
-export function AddResultsModal({ open, onClose, onSuccess, initialLotId, initialSampleId }: {
+export function AddResultsModal({ open, onClose, onSuccess, initialLotId, initialSampleId, prefill }: {
   open: boolean; onClose: () => void; onSuccess?: () => void; initialLotId?: string; initialSampleId?: string;
+  /** Optional COA extraction to prefill — only applied on open */
+  prefill?: {
+    lab_name: string | null; lab_license_number: string | null;
+    test_date: string | null; potency: {
+      thc_pct: number | null; thca_pct: number | null; total_thc_pct: number | null;
+      cbd_pct: number | null; cbda_pct: number | null; total_terpenes_pct: number | null;
+    };
+    pesticides_pass: boolean | null; heavy_metals_pass: boolean | null; microbials_pass: boolean | null;
+    mycotoxins_pass: boolean | null; residual_solvents_pass: boolean | null;
+    moisture_content_pct: number | null; water_activity: number | null;
+    overall_result: "Pass" | "Fail" | "FailExtractableOnly" | "FailRetestAllowed" | null;
+    notes: string | null;
+  } | null;
 }) {
   const { orgId } = useOrg();
   const createResult = useCreateQAResult();
@@ -319,17 +332,32 @@ export function AddResultsModal({ open, onClose, onSuccess, initialLotId, initia
     if (!open || !orgId) return;
     setLotId(initialLotId ?? "");
     setSampleId(initialSampleId ?? "");
-    setLabName(""); setLabLicense("");
-    setTestDate(new Date().toISOString().slice(0, 10));
-    setLabTestStatus("Pass");
-    setShowAdvanced(false);
-    setThc(""); setThca(""); setD9(""); setCbd(""); setCbda(""); setCbg(""); setCbn("");
-    setTotalTerp(""); setTerpenes([]);
-    setPestP(null); setHeavyP(null); setMicroP(null); setMycoP(null); setSolvP(null); setForeignP(null);
-    setMoisture(""); setWaterAct("");
+    // If prefill was passed, hydrate from it; otherwise clear to defaults
+    setLabName(prefill?.lab_name ?? "");
+    setLabLicense(prefill?.lab_license_number ?? "");
+    setTestDate(prefill?.test_date ?? new Date().toISOString().slice(0, 10));
+    setLabTestStatus((prefill?.overall_result as QaResultLabTestStatus) ?? "Pass");
+    setShowAdvanced(!!prefill);
+    setThc(prefill?.potency.total_thc_pct != null ? String(prefill.potency.total_thc_pct) : prefill?.potency.thc_pct != null ? String(prefill.potency.thc_pct) : "");
+    setThca(prefill?.potency.thca_pct != null ? String(prefill.potency.thca_pct) : "");
+    setD9("");
+    setCbd(prefill?.potency.cbd_pct != null ? String(prefill.potency.cbd_pct) : "");
+    setCbda(prefill?.potency.cbda_pct != null ? String(prefill.potency.cbda_pct) : "");
+    setCbg(""); setCbn("");
+    setTotalTerp(prefill?.potency.total_terpenes_pct != null ? String(prefill.potency.total_terpenes_pct) : "");
+    setTerpenes([]);
+    setPestP(prefill?.pesticides_pass ?? null);
+    setHeavyP(prefill?.heavy_metals_pass ?? null);
+    setMicroP(prefill?.microbials_pass ?? null);
+    setMycoP(prefill?.mycotoxins_pass ?? null);
+    setSolvP(prefill?.residual_solvents_pass ?? null);
+    setForeignP(null);
+    setMoisture(prefill?.moisture_content_pct != null ? String(prefill.moisture_content_pct) : "");
+    setWaterAct(prefill?.water_activity != null ? String(prefill.water_activity) : "");
     setCoaUrls([]); setCoaInput("");
-    setTestName(""); setTestValue(""); setOverallPass("auto");
-    setExpDate(""); setNotes("");
+    setTestName(""); setTestValue("");
+    setOverallPass(prefill?.overall_result === "Pass" ? "true" : prefill?.overall_result ? "false" : "auto");
+    setExpDate(""); setNotes(prefill?.notes ?? "");
     (async () => {
       const { data: lotRows } = await supabase
         .from("grow_qa_lots").select("id, lot_number, parent_batch_id, lot_weight_grams, status").eq("org_id", orgId)
@@ -344,6 +372,7 @@ export function AddResultsModal({ open, onClose, onSuccess, initialLotId, initia
         .from("grow_qa_samples").select("id, qa_lot_id, lab_name, sample_weight_grams").eq("org_id", orgId);
       setSamples((sampleRows ?? []) as any);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, orgId, initialLotId, initialSampleId]);
 
   const samplesForLot = useMemo(() => samples.filter((s) => s.qa_lot_id === lotId), [samples, lotId]);

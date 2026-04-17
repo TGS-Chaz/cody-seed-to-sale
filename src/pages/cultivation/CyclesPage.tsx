@@ -270,6 +270,13 @@ export default function CyclesPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, strain, area…"
+        pageKey="cycles"
+        currentFilters={{ ...filters, dateRange, search: searchValue }}
+        onApplyView={(f) => {
+          setFilters({ status: f.status ?? "active", phase: f.phase, strain_id: f.strain_id, area_id: f.area_id });
+          setDateRange(f.dateRange ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.status ?? "active"} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as any }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

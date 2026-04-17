@@ -349,6 +349,17 @@ export default function BatchesPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search barcode, external ID, product, strain…"
+        pageKey="batches"
+        currentFilters={{ ...filters, categoryFilter, qaFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setFilters({
+            source_type: f.source_type, strain_id: f.strain_id, area_id: f.area_id,
+            is_available: f.is_available, is_medical: f.is_medical, is_doh_compliant: f.is_doh_compliant,
+          });
+          setCategoryFilter(f.categoryFilter ?? "");
+          setQaFilter(f.qaFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.source_type ?? ""} onChange={(e) => setFilters((f) => ({ ...f, source_type: e.target.value || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

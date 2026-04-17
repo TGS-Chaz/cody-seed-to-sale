@@ -98,6 +98,21 @@ export function useTasks(filters: TaskFilters = {}) {
   }, [user?.id, orgId, tick, sig]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  // Realtime: any task change for this org → refetch
+  useEffect(() => {
+    if (!orgId) return;
+    const channel = supabase
+      .channel(`tasks:${orgId}`)
+      .on(
+        "postgres_changes" as any,
+        { event: "*", schema: "public", table: "grow_tasks", filter: `org_id=eq.${orgId}` },
+        () => setTick((t) => t + 1),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [orgId]);
+
   return { data, loading, refresh };
 }
 

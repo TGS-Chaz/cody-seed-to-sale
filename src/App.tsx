@@ -74,6 +74,7 @@ import SuppliesPage from "@/pages/inventory/SuppliesPage";
 import ImportPage from "@/pages/settings/ImportPage";
 import EnvironmentDashboardPage from "@/pages/operations/EnvironmentDashboardPage";
 import KioskPage from "@/pages/kiosk/KioskPage";
+import TraceabilityPage from "@/pages/public/TraceabilityPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -93,6 +94,7 @@ export default function App() {
               <Routes>
                 {/* Public / kiosk routes */}
                 <Route path="/menu/:slug" element={<PublicMenuPage />} />
+                <Route path="/public/trace/:batchExternalId" element={<TraceabilityPage />} />
                 <Route path="/kiosk/*" element={<KioskPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />

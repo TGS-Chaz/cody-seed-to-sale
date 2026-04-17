@@ -275,6 +275,15 @@ export default function StrainsPage() {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, breeder, genetics…"
+        pageKey="strains"
+        currentFilters={{ typeFilter, breederFilter, activeFilter, terpeneFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setBreederFilter(f.breederFilter ?? "");
+          setActiveFilter(f.activeFilter ?? "");
+          setTerpeneFilter(f.terpeneFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as StrainType | "")} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

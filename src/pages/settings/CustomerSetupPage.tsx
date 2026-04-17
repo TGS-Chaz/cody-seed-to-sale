@@ -145,6 +145,9 @@ function StatusesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search statuses…"
+        pageKey="account_statuses"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => { setEditing(null); setModalOpen(true); }} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" /> Add Status
@@ -301,6 +304,9 @@ function NoteAttributesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search note attributes…"
+        pageKey="note_attributes"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => { setEditing(null); setModalOpen(true); }} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" /> Add Attribute
@@ -540,6 +546,9 @@ function PriceListsTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search price lists…"
+        pageKey="price_lists"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => { setEditing(null); setModalOpen(true); }} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" /> New Price List
@@ -724,6 +733,12 @@ function DiscountsTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search discounts…"
+        pageKey="discounts"
+        currentFilters={{ statusFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setStatusFilter(f.statusFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5">
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

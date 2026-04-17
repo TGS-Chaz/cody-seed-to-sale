@@ -286,6 +286,21 @@ export function useGrowBoard() {
   }, [user?.id, orgId, tick]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  // Realtime: any change to grow_board_cards for this org triggers a refetch
+  useEffect(() => {
+    if (!orgId) return;
+    const channel = supabase
+      .channel(`board-cards:${orgId}`)
+      .on(
+        "postgres_changes" as any,
+        { event: "*", schema: "public", table: "grow_board_cards", filter: `org_id=eq.${orgId}` },
+        () => setTick((t) => t + 1),
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [orgId]);
+
   return { data, loading, error, refresh };
 }
 

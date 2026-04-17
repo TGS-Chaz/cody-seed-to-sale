@@ -244,6 +244,12 @@ function DriversTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search name, license #, or phone…"
+        pageKey="drivers"
+        currentFilters={{ typeFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
@@ -458,6 +464,12 @@ function VehiclesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search make, model, plate, VIN, unit name…"
+        pageKey="vehicles"
+        currentFilters={{ typeFilter, search: searchValue }}
+        onApplyView={(f) => {
+          setTypeFilter(f.typeFilter ?? "");
+          setSearchValue(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5">
             <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as any)} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
@@ -634,6 +646,9 @@ function RoutesTab({ active }: { active: boolean }) {
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="Search route name or description…"
+        pageKey="routes"
+        currentFilters={{ search: searchValue }}
+        onApplyView={(f) => setSearchValue(f.search ?? "")}
         actions={
           <Button onClick={() => { setEditing(null); setModalOpen(true); }} className="gap-1.5">
             <Plus className="w-3.5 h-3.5" /> Create Route

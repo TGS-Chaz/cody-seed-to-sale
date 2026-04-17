@@ -128,6 +128,12 @@ export default function TasksPage() {
       <FiltersBar
         searchValue={search} onSearchChange={setSearch}
         searchPlaceholder="Search task, assignee…"
+        pageKey="tasks"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ priority: f.priority, status: f.status });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.priority ?? ""} onChange={(e) => setFilters((f) => ({ ...f, priority: e.target.value || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">

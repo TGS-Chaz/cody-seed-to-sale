@@ -25,6 +25,8 @@ import {
 } from "@/hooks/useQA";
 import { QaResultLabTestStatus } from "@/lib/schema-enums";
 import { CreateQALotModal, CreateSampleModal, AddResultsModal, ImportJSONModal } from "./QAModals";
+import COAExtractor, { COAExtraction } from "@/components/ai/COAExtractor";
+import { Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const LOT_STATUS_VARIANT: Record<string, "success" | "warning" | "critical" | "info" | "muted"> = {
@@ -82,6 +84,8 @@ export default function QAPage() {
   const [createSampleOpen, setCreateSampleOpen] = useState(false);
   const [addResultsOpen, setAddResultsOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [coaExtractOpen, setCoaExtractOpen] = useState(false);
+  const [prefillExtraction, setPrefillExtraction] = useState<COAExtraction | null>(null);
   const [search, setSearch] = useState("");
 
   const modalOpen = createLotOpen || createSampleOpen || addResultsOpen || importOpen;
@@ -220,9 +224,14 @@ export default function QAPage() {
         actions={
           <div className="flex items-center gap-2">
             {tab === "results" && (
-              <Button variant="outline" onClick={() => setImportOpen(true)} className="gap-1.5">
-                <Upload className="w-3.5 h-3.5" /> Import from JSON
-              </Button>
+              <>
+                <Button variant="outline" onClick={() => setCoaExtractOpen(true)} className="gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" /> Extract from COA
+                </Button>
+                <Button variant="outline" onClick={() => setImportOpen(true)} className="gap-1.5">
+                  <Upload className="w-3.5 h-3.5" /> Import from JSON
+                </Button>
+              </>
             )}
             <Button
               onClick={() => {
@@ -257,6 +266,9 @@ export default function QAPage() {
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder="Search lot #, batch barcode, product…"
+            pageKey="qa_lots"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
           />
           <DataTable
             columns={lotColumns}
@@ -282,6 +294,9 @@ export default function QAPage() {
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder="Search sample, lab name, license, lot…"
+            pageKey="qa_samples"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
           />
           <DataTable
             columns={sampleColumns}
@@ -308,6 +323,9 @@ export default function QAPage() {
             searchValue={search}
             onSearchChange={setSearch}
             searchPlaceholder="Search lot, batch, product, lab…"
+            pageKey="qa_results"
+            currentFilters={{ search }}
+            onApplyView={(f) => setSearch(f.search ?? "")}
           />
           <DataTable
             columns={resultColumns}
@@ -330,8 +348,16 @@ export default function QAPage() {
 
       <CreateQALotModal open={createLotOpen} onClose={() => setCreateLotOpen(false)} onSuccess={() => refreshLots()} />
       <CreateSampleModal open={createSampleOpen} onClose={() => setCreateSampleOpen(false)} onSuccess={() => { refreshSamples(); refreshLots(); }} />
-      <AddResultsModal open={addResultsOpen} onClose={() => setAddResultsOpen(false)} onSuccess={() => { refreshResults(); refreshLots(); refreshSamples(); }} />
+      <AddResultsModal open={addResultsOpen} onClose={() => { setAddResultsOpen(false); setPrefillExtraction(null); }} onSuccess={() => { refreshResults(); refreshLots(); refreshSamples(); }} prefill={prefillExtraction} />
       <ImportJSONModal open={importOpen} onClose={() => setImportOpen(false)} onSuccess={() => { refreshResults(); refreshLots(); }} />
+      <COAExtractor
+        open={coaExtractOpen}
+        onClose={() => setCoaExtractOpen(false)}
+        onExtracted={(data) => {
+          setPrefillExtraction(data);
+          setAddResultsOpen(true);
+        }}
+      />
     </div>
   );
 }

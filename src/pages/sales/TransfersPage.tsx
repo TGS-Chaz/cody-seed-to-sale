@@ -106,7 +106,12 @@ export default function TransfersPage() {
         <StatCard label="Accepted" value={stats.accepted} accentClass="stat-accent-emerald" delay={0.1} />
       </div>
 
-      <FiltersBar searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search origin license, name…" />
+      <FiltersBar
+        searchValue={search} onSearchChange={setSearch} searchPlaceholder="Search origin license, name…"
+        pageKey="transfers"
+        currentFilters={{ search }}
+        onApplyView={(f) => setSearch(f.search ?? "")}
+      />
 
       <DataTable
         columns={columns} data={filtered} loading={loading}

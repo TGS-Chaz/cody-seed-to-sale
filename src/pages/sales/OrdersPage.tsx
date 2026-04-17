@@ -143,6 +143,12 @@ export default function OrdersPage() {
       <FiltersBar
         searchValue={search} onSearchChange={setSearch}
         searchPlaceholder="Search order #, account…"
+        pageKey="orders"
+        currentFilters={{ ...filters, search }}
+        onApplyView={(f) => {
+          setFilters({ status: f.status, sale_type: f.sale_type });
+          setSearch(f.search ?? "");
+        }}
         actions={
           <div className="flex items-center gap-1.5 flex-wrap">
             <select value={filters.status ?? ""} onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as OrderStatus || undefined }))} className="h-9 px-3 text-[12px] rounded-md bg-background border border-border">
