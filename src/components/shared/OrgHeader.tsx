@@ -29,7 +29,7 @@ export default function OrgHeader() {
     minute: "2-digit",
   });
 
-  const orgName = org?.name ?? "The Green Solution";
+  const orgName = org?.name ?? "Your company";
 
   return (
     <div className="flex items-center gap-3">

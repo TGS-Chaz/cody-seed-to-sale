@@ -27,7 +27,7 @@ export default function ProfilePage() {
   const { tier } = useProductAccess("grow");
 
   const [form, setForm] = useState<ProfileForm>({
-    first_name: "", last_name: "", phone: "", role: "", company: "The Green Solution",
+    first_name: "", last_name: "", phone: "", role: "", company: "",
   });
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -45,7 +45,7 @@ export default function ProfilePage() {
         last_name: profile.last_name ?? parts.slice(1).join(" ") ?? "",
         phone: profile.phone ?? "",
         role: profile.role ?? "",
-        company: profile.company ?? "The Green Solution",
+        company: profile.company ?? "",
       });
       setAvatarUrl(profile.avatar_url ?? null);
     }
@@ -269,7 +269,7 @@ export default function ProfilePage() {
             <Input
               value={form.company}
               onChange={e => set("company", e.target.value)}
-              placeholder="e.g. The Green Solution"
+              placeholder="e.g. Your company"
             />
           </div>
         </div>
