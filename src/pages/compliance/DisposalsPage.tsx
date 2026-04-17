@@ -1,20 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Leaf, Package, Scale, CheckCircle, CloudUpload, AlertTriangle } from "lucide-react";
+import { Trash2, Leaf, Package, Scale, CheckCircle, CloudUpload, AlertTriangle, Recycle, MoreHorizontal } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
-import DataTable from "@/components/shared/DataTable";
+import DataTable, { RowActionsCell } from "@/components/shared/DataTable";
 import FiltersBar from "@/components/shared/FiltersBar";
 import DateTime from "@/components/shared/DateTime";
 import { useCodyContext } from "@/hooks/useCodyContext";
 import { useDisposals, useDisposalStats, Disposal } from "@/hooks/useDisposals";
+import { ConvertWasteModal } from "./ConvertWasteModal";
 
 export default function DisposalsPage() {
   const navigate = useNavigate();
-  const { data: disposals, loading } = useDisposals();
+  const { data: disposals, loading, refresh } = useDisposals();
   const stats = useDisposalStats(disposals);
   const [search, setSearch] = useState("");
+  const [convertDisposal, setConvertDisposal] = useState<Disposal | null>(null);
 
   const { setContext, clearContext } = useCodyContext();
   useEffect(() => {
@@ -72,6 +76,19 @@ export default function DisposalsPage() {
         : <AlertTriangle className="w-3.5 h-3.5 text-muted-foreground/40" aria-label="Pending" />,
     },
     { accessorKey: "notes", header: "Notes", cell: ({ row }) => row.original.notes ? <span className="text-[11px] text-muted-foreground truncate max-w-[280px] inline-block">{row.original.notes}</span> : <span className="text-muted-foreground">—</span> },
+    {
+      id: "actions", enableSorting: false, header: "",
+      cell: ({ row }) => (
+        <RowActionsCell>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild><button className="p-1 rounded hover:bg-accent"><MoreHorizontal className="w-4 h-4 text-muted-foreground" /></button></DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setConvertDisposal(row.original)}><Recycle className="w-3.5 h-3.5" /> Convert to Sellable Waste</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </RowActionsCell>
+      ),
+    },
   ], [navigate]);
 
   return (
@@ -99,8 +116,10 @@ export default function DisposalsPage() {
           description: disposals.length === 0 ? "Plant destructions and inventory disposals will appear here for compliance reporting." : "Clear search or adjust filters.",
         }}
       />
+
+      <ConvertWasteModal open={!!convertDisposal} onClose={() => setConvertDisposal(null)} disposal={convertDisposal} onSuccess={() => { refresh(); }} />
     </div>
   );
 }
 
-void Scale; void CheckCircle;
+void Scale; void CheckCircle; void Button;

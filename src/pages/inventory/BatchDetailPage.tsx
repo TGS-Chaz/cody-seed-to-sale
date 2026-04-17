@@ -19,6 +19,7 @@ import DataTable from "@/components/shared/DataTable";
 import DateTime from "@/components/shared/DateTime";
 import EmptyState from "@/components/shared/EmptyState";
 import CopyableId from "@/components/shared/CopyableId";
+import BarcodeRenderer from "@/components/shared/BarcodeRenderer";
 import CodyInsightsPanel from "@/components/cody/CodyInsightsPanel";
 import { useShortcut } from "@/components/shared/KeyboardShortcuts";
 import { useCodyContext } from "@/hooks/useCodyContext";
@@ -229,8 +230,11 @@ export default function BatchDetailPage() {
               <span className="text-[14px] font-medium text-muted-foreground ml-2">of {initial.toFixed(1)}g initial</span>
             </div>
           </div>
-          <div className={cn("text-[12px] font-mono", depleted ? "text-muted-foreground" : pct < 10 ? "text-destructive" : "text-foreground")}>
-            {pct.toFixed(1)}% remaining
+          <div className="flex items-end gap-4">
+            <BarcodeRenderer value={batch.barcode} format="code128" height={48} showText={false} />
+            <div className={cn("text-[12px] font-mono", depleted ? "text-muted-foreground" : pct < 10 ? "text-destructive" : "text-foreground")}>
+              {pct.toFixed(1)}% remaining
+            </div>
           </div>
         </div>
         <div className="h-2 rounded-full bg-muted overflow-hidden">

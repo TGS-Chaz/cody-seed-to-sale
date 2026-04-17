@@ -70,6 +70,9 @@ import PublicMenuPage from "@/pages/marketplace/PublicMenuPage";
 import RecallsPage from "@/pages/compliance/RecallsPage";
 import RecallDetailPage from "@/pages/compliance/RecallDetailPage";
 import SuppliesPage from "@/pages/inventory/SuppliesPage";
+import ImportPage from "@/pages/settings/ImportPage";
+import EnvironmentDashboardPage from "@/pages/operations/EnvironmentDashboardPage";
+import KioskPage from "@/pages/kiosk/KioskPage";
 import { ShortcutsProvider } from "@/components/shared/KeyboardShortcuts";
 
 function ScrollToTop() {
@@ -87,8 +90,9 @@ export default function App() {
           <TooltipProvider>
             <ShortcutsProvider>
               <Routes>
-                {/* Public routes */}
+                {/* Public / kiosk routes */}
                 <Route path="/menu/:slug" element={<PublicMenuPage />} />
+                <Route path="/kiosk/*" element={<KioskPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/request-access" element={<RequestAccessPage />} />
@@ -153,6 +157,7 @@ export default function App() {
                     {/* Operations */}
                     <Route path="/operations/tasks" element={<TasksPage />} />
                     <Route path="/operations/logs" element={<GrowLogsPage />} />
+                    <Route path="/operations/environment" element={<EnvironmentDashboardPage />} />
 
                     {/* Reports */}
                     <Route path="/reports" element={<ReportsPage />} />
@@ -177,6 +182,7 @@ export default function App() {
                     <Route path="/settings/equipment/:id" element={<EquipmentDetailPage />} />
                     <Route path="/settings/ccrs" element={<CCRSSettingsPage />} />
                     <Route path="/settings/ai" element={<AIPreferencesPage />} />
+                    <Route path="/settings/import" element={<ImportPage />} />
                     <Route path="/settings/integrations" element={<IntegrationsPage />} />
                     <Route path="/settings/strains" element={<PlaceholderPage />} />
                     <Route path="/settings/areas" element={<PlaceholderPage />} />

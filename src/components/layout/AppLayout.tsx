@@ -24,6 +24,7 @@ import {
   Store,
   AlertOctagon,
   Boxes,
+  Thermometer,
   Settings,
   LogOut,
   Sun,
@@ -66,6 +67,7 @@ const navGroups = [
   { label: "Operations", items: [
     { to: "/operations/tasks", icon: ClipboardList, label: "Tasks" },
     { to: "/operations/logs", icon: BookOpen, label: "Grow Logs" },
+    { to: "/operations/environment", icon: Thermometer, label: "Environment" },
   ]},
   { label: "Inventory", items: [
     { to: "/inventory/batches", icon: Barcode, label: "Batches" },
