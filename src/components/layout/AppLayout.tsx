@@ -160,7 +160,7 @@ export default function AppLayout() {
                 </span>
               </div>
               <div className="text-muted-foreground">
-                <ProductSwitcher currentProduct="grow" products={CODY_PRODUCTS} />
+                <ProductSwitcher currentProduct="grow" products={CODY_PRODUCTS} alignment="left" />
               </div>
             </>
           )}
